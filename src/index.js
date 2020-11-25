@@ -1,13 +1,45 @@
 'use strict'
 
-const W_MAP = document.getElementById('worldmap')
+import './style.scss';
+import { WORLDMAP, MINIMAP } from './js/world.js';
+import { createChart } from './js/chart.js';
+
+const dataManage = {
+  南アジア: {postion: 0},
+  北ヨーロッパ: {postion: 1},
+  南ヨーロッパ: {postion: 1},
+  北アフリカ: {postion: 3},
+  ポリネシア: {postion: 6},
+  中央アフリカ: {postion: 3},
+  カリブ海: {postion: 6},
+  "": {postion: 0},
+  南アメリカ: {postion: 2},
+  西アジア: {postion: 0},
+  オーストラリア: {postion: 5},
+  西ヨーロッパ: {postion: 1},
+  東ヨーロッパ: {postion: 1},
+  中央アメリカ: {postion: 2},
+  西アフリカ: {postion: 3},
+  北アメリカ: {postion: 1},
+  南部アフリカ: {postion: 3},
+  東アフリカ: {postion: 3},
+  東南アジア: {postion: 0},
+  東アジア: {postion: 0},
+  メラネシア: {postion: 6},
+  ミクロネシア: {postion: 6},
+  中央アジア: {postion: 0},
+};
+
 const SELECT_BOX = document.getElementById('sub_region')
 const START_BTN = document.getElementById('start_btn')
-const MENUE_BTN = document.getElementById('menue_btn')
 const SWITCH_BTN = document.getElementById('name_switch')
-const MODAL_MENUE = document.getElementById('status_chart')
 const FLAG_WRAPPER = document.getElementById('cauntry_flag_wrapper')
-const TITLE = document.getElementById("title")
+const RESULT_CLOSE_BTN = document.getElementById('result_close')
+const COLLECTION_WRAPPER = document.getElementById('collection')
+
+const popUpDom = document.getElementsByClassName("leaflet-popup-pane");
+
+const MARKER_URL = 'https://unpkg.com/leaflet@1.4.0/dist/images/marker-icon-2x.png'
 
 const Q_LEVEL = {
   easy:    5,
@@ -22,7 +54,7 @@ let mistakeCount = null
 
 let referMarkers = []
 let referCircle
-let subregionName = null
+let subregionName
 
 let isPlaying = false
 let nameHidden = false
@@ -34,13 +66,42 @@ const baseUrl = 'https://restcountries.eu/rest/v2/';
   fetch(baseUrl + 'all')
     .then((res) => res.json())
     .then((data) => {
+      for (let i = 0; i < data.length; i++) {
+        const tag = 
+        createTag(
+          "span",
+          [
+            ["class", "result_flag"],
+            ["name", data[i].flag]
+          ],
+          data[i].translations.ja,
+          false
+          );
+        
+        const src = localStorage.getItem(`${data[i].translations.ja} src`);
+        console.log(JSON.stringify(src));
+        if (tag.getAttribute('name') === src) {
+          createTag('img', [['src', src], ['class', 'result_flag']], false, COLLECTION_WRAPPER)
+        } else {
+          COLLECTION_WRAPPER.appendChild(tag)
+        }
+      }
       const headerDict = makeDict(data)
-      createSubregionTags(headerDict);
+      const headerDOMs = createSubregionTags(headerDict);
+      headerDOMs.forEach(dom => {
+        SELECT_BOX.appendChild(dom)
+      });
+      createChart(dataManage);
+      [...popUpDom].forEach((dom) => {
+        dom.style.visibility = "hidden";
+      });
     })
 })();
 
-//タイトルクリックで世界地図全体図にズームアウト
-TITLE.addEventListener("click", () => WORLDMAP.setView(INITIAL_LATLNG, 2));
+RESULT_CLOSE_BTN.addEventListener('click', () => {
+  const result = document.getElementById('result')
+  initElements(result)
+});
 
 SWITCH_BTN.addEventListener('click', () => hiddenName());
 
@@ -49,9 +110,8 @@ START_BTN.addEventListener('click', () => {
     if (confirm("テストをあきらめて地域選択にもどりますか？")) {
       changeBtn('テストにチャレンジ')
       clearView()
-      if (dataManage[subregionName].challengeCount !== 0) {
-        dataManage[subregionName].challengeCount--;
-      }
+      const val = parseInt(localStorage.getItem(`${subregionName} challengeCount`)) - 1
+      localStorage.setItem(`${subregionName} challengeCount`, val);
       return
     } else {
       return;
@@ -63,8 +123,14 @@ START_BTN.addEventListener('click', () => {
     return
   }
 
-  dataManage[subregionName].challengeCount++
-  console.log(dataManage[subregionName]);
+  if (!localStorage[`${subregionName} challengeCount`]) {
+    localStorage.setItem(`${subregionName} challengeCount`, 1)
+  } else {
+    const val = parseInt(localStorage.getItem(`${subregionName} challengeCount`)) + 1
+    localStorage.setItem(`${subregionName} challengeCount`, val);
+  }
+  // localStorage.clear();
+
   setFlagDOM(referMarkers)
   const MARKERS_DOM = document.querySelectorAll(".leaflet-marker-icon");
   const FLAGS_DOM = document.querySelectorAll(".flag_pic");
@@ -82,7 +148,6 @@ START_BTN.addEventListener('click', () => {
 
 //エリア選択で
 SELECT_BOX.addEventListener('click', event => {
-  console.log(event.target.className.split(' ')[0]);
   if (event.target.className.split(" ")[0] !== "subregion") {
     return;
   }
@@ -118,11 +183,13 @@ SELECT_BOX.addEventListener('click', event => {
       //ズームインの為の座標値を算出
       let sumLat = null
       let sumLng = null
+     
       markers.forEach(marker => {
         sumLat += marker._latlng.lat
         sumLng += marker._latlng.lng
         marker.addTo(WORLDMAP)
-      })
+      }) 
+
       //ズームしてポインタを表示
       WORLDMAP.setView([sumLat / markers.length, sumLng / markers.length], 4);
       const circle = makeCircle(sumLat / markers.length, sumLng / markers.length)
@@ -146,11 +213,9 @@ SELECT_BOX.addEventListener('click', event => {
 
 const playGame = (TERGET_DOMS) => {
   isPlaying = true
-  if (correctCount === level) {
-    isPlaying = false
-    clearView('Mission Complete!!')
-    changeBtn("テストにチャレンジ");
-    dataManage[subregionName].clearCount++;
+  correctCount = 10
+  if (correctCount === TERGET_DOMS.length / 2 || correctCount === level) {
+    gameClear(TERGET_DOMS)
     return
   }
   let answers = []
@@ -182,7 +247,6 @@ const judge = (answers, TERGET_DOMS) => {
     const markerDom = getImgSrc(answers).markerDom
     const flagSrc = getImgSrc(answers).flagSrc
     const flagDom = getImgSrc(answers).flagDom
-    console.log(markerDom, flagSrc);
     setTimeout(() => {
       changeClass(/*del =*/ "clicked", /*add =*/ false)
       flagDom.classList.add('corrected')
@@ -197,23 +261,78 @@ const judge = (answers, TERGET_DOMS) => {
     console.log('間違い');
     setTimeout(() => changeClass(/*del =*/ "clicked", /*add =*/ false), 1000)
     mistakeCount++
-    if (mistakeCount === 3) {
-      clearView('game over...')
-      changeBtn("テストにチャレンジ");
-      return
-    }
+    console.log(mistakeCount);
   }
   answers.length = 0
   playGame(TERGET_DOMS)
 }
 
-const clearView = (...args) => {
-  isPlaying = false
-  console.log(args[0]);
-  if (args.length) {
-    console.log(args);
-    FLAG_WRAPPER.innerHTML = `<h1>${args[0]}</h1>`;
+const gameClear = (data) => {
+  isPlaying = false;
+  changeBtn("テストにチャレンジ");
+  if (!localStorage[`${subregionName} clearCount`]) {
+    localStorage.setItem(`${subregionName} clearCount`, 1);
+  } else {
+    const val =
+      parseInt(localStorage.getItem(`${subregionName} clearCount`)) + 1;
+    localStorage.setItem(`${subregionName} clearCount`, val);
   }
+
+  const getFlagImgs = data.filter(d => d.className.split(' ')[0] === 'flag_pic')
+  console.log(getFlagImgs[0].getAttribute('name'));
+  const src = getFlagImgs.map(img => img.getAttribute('src'))
+  const name = getFlagImgs.map(img => img.getAttribute('name'))
+  console.log(src, name)
+
+  const msg = document.getElementById('clearMsg')
+  $("#result_modal").modal();
+  console.log(mistakeCount);
+  if (!mistakeCount) {
+    result_getFlag(src, name, src.length);
+    msg.textContent = "Get all flags!";
+    clearView();
+    return;
+  }
+  if (mistakeCount <= 5) {
+    result_getFlag(src, name, 5);
+    msg.textContent = "Get two flags!";
+    clearView();
+    return
+  }
+  if (mistakeCount <= 3) {
+    result_getFlag(src, name, 3);
+    msg.textContent = "Get three flags!";
+    clearView();
+    return
+  }
+  result_getFlag(src, name, 1);
+  msg.textContent = "Get one flags!";
+  clearView();
+}
+
+const result_getFlag = (src, name,leng) => {
+  const result = document.getElementById("result");
+  for (let i = 0; i < leng; i++) {
+    createTag(
+      "img",
+      [
+        ["src", src[i]],
+        ["alt", name[i]],
+        ["class", "result_flag"],
+      ],
+      false,
+      result
+    );
+    localStorage.setItem(`${name[i]} src`, src[i])
+  }
+}
+
+//  <button id="menue_btn" class="btn p-0" data-toggle="modal" data-target="#status_modal">|||</button>
+
+
+
+const clearView = () => {
+  isPlaying = false
   correctCount = 0;
   mistakeCount = 0;
   initElements(FLAG_WRAPPER);
@@ -237,10 +356,11 @@ const createSubregionTags = (dict) => {
   let i = 0
   let renameKey = []
   let japaneseKey = Object.keys(dataManage);
+  let beforeSortData = []
   dict.forEach((val, key) => {
     renameKey.push(key.replace(key, japaneseKey[i]))
     if (key) {
-      const outlineTag = createTag('div', ['class', 'select_btn my-1 mr-3'], false, false)
+      const outlineTag = createTag('div', ['class', 'select_btn my-1 mr-3 ' + dataManage[japaneseKey[i]].postion], false, false)
       createTag(
           /*tag*/     "button",
         [
@@ -253,12 +373,12 @@ const createSubregionTags = (dict) => {
       const innerTag = createTag('div', ['class', 'content_wrap m-0 p-0'], false, outlineTag)
       createTag('p', ['class', 'cauntry_count subregion_content m-0 p-0'], `${val}カ国`, innerTag)
       createTag("p", ["class", "level subregion_content m-0 p-0"], '', innerTag);
-      createTag('a', [['class', 'info subregion_content m-0 p-0'],['href', '#']], `${renameKey[i]}を調べる`, outlineTag)
-      SELECT_BOX.appendChild(outlineTag)
+      createTag('a', [['class', 'info subregion_content m-0 p-0'], ['href', '#']], `${renameKey[i]}を調べる`, outlineTag)
+      beforeSortData.push(outlineTag)
     }
     i++;
   });
-  createChart(renameKey);
+  return beforeSortData.sort((a, b) => a.className.split(" ")[3] - b.className.split(" ")[3])
 }
 
 
@@ -278,6 +398,7 @@ const formatData = (data) => {
 };
 
 const setFlagDOM = (flagData) => {
+  console.log(flagData[0]);
   for (let i = 0; i < level; i++) {
     if (i >= flagData.length) return;
     createTag(
@@ -285,6 +406,7 @@ const setFlagDOM = (flagData) => {
       [
         ["src", flagData[i]._icon.currentSrc],
         ["class", `flag_pic _ _ ${flagData[i]._latlng.lat}_${flagData[i]._latlng.lng}`],
+        ['name', flagData[i]._tooltip._content]
       ],
       false,
       FLAG_WRAPPER
@@ -325,7 +447,6 @@ const changeClass = (delClassName, addClassName) => {
 };
 
 const getImgSrc = (answers) => {
-  console.log(answers[0][0], answers[1][0]);
   if (answers[0][0] !== "flag_pic") {
     return {
       markerDom: answers[0][2],
@@ -355,9 +476,81 @@ const changeBtn = (text) => {
   }
 };
 
+const makeMarker = (lat_lng, name, link) => {
+  const Markers_shape = [];
+  const Markers_shape_pos = [];
+  const Markers_shape_nam = [];
+  const Markers_shape_lnk = [];
+  Markers_shape_pos[0] = lat_lng;
+  Markers_shape_nam[0] = name;
+  Markers_shape_lnk[0] = `<a href=${link} target='_blank'>${name}へのリンク</a>`;
+  Markers_shape[0] = L.marker([
+    Markers_shape_pos[0][0],
+    Markers_shape_pos[0][1],
+  ]);
+
+  Markers_shape[0]
+    .bindTooltip(Markers_shape_nam[0], {
+      permanent: true,
+      // offset: L.point(40, 0)
+    })
+    .openTooltip();
+  Markers_shape[0].bindPopup(Markers_shape_nam[0]).openPopup();
+  return Markers_shape[0];
+};
+
+const removeMarker = (markers) => {
+  markers.forEach((marker) => {
+    WORLDMAP.removeLayer(marker);
+  });
+};
+
+const makeCircle = (lat, lng) => {
+  if (referCircle) {
+    removeCircle(referCircle);
+  }
+  return L.circle([lat, lng], {
+    radius: 2000 * 1000,
+    color: "red",
+    fillColor: "pink",
+    fillOpacity: 0.5,
+  });
+};
+
+const removeCircle = (circle) => {
+  MINIMAP.removeLayer(circle);
+};
+
+const hiddenName = () => {
+  if (referMarkers.length === 0) return;
+
+  const cauntryNames = document.getElementsByClassName("leaflet-tooltip");
+  if (nameHidden) {
+    [...cauntryNames].forEach((name) => {
+      name.style.visibility = "visible";
+    });
+    [...popUpDom].forEach((dom) => {
+      dom.style.visibility = "hidden";
+    });
+    nameHidden = false;
+    return;
+  }
+
+  if (!nameHidden) {
+    [...cauntryNames].forEach((name) => {
+      name.style.visibility = "hidden";
+    });
+    [...popUpDom].forEach((dom) => {
+      dom.style.visibility = "visible";
+    });
+
+    nameHidden = true;
+    return;
+  }
+};
 
 //createTag('p', ['id', 'user_name' ], 'username: ', data_wrapper)
-//attrs, contentが不要の時はfalseを引数に入れてください
+//attrs, contentが不要の時はfalseを引数に入れる
 const createTag = (elementName, attrs, content, parentNode) => {
   const el = document.createElement(elementName);
 
@@ -385,97 +578,3 @@ const createTag = (elementName, attrs, content, parentNode) => {
   return el;
 };
 
-const dataManage = {
-  "南アジア": {
-    challengeCount: null,
-    clearCount: null
-  },
-  "北ヨーロッパ": {
-    challengeCount: null,
-    clearCount: null
-  },
-  "南ヨーロッパ": {
-    challengeCount: null,
-    clearCount: null
-  },
-  "北アフリカ": {
-    challengeCount: null,
-    clearCount: null
-  },
-  "ポリネシア": {
-    challengeCount: null,
-    clearCount: null
-  },
-  "中央アフリカ": {
-    challengeCount: null,
-    clearCount: null
-  },
-  "カリブ海": {
-    challengeCount: null,
-    clearCount: null
-  },
-  "": {
-    challengeCount: null,
-    clearCount: null
-  },
-  "南アメリカ": {
-    challengeCount: null,
-    clearCount: null
-  },
-  "西アジア": {
-    challengeCount: null,
-    clearCount: null
-  },
-  "オーストラリア": {
-    challengeCount: null,
-    clearCount: null
-  },
-  "西ヨーロッパ": {
-    challengeCount: null,
-    clearCount: null
-  },
-  "東ヨーロッパ": {
-    challengeCount: null,
-    clearCount: null
-  },
-  "中央アメリカ": {
-    challengeCount: null,
-    clearCount: null
-  },
-  "西アフリカ": {
-    challengeCount: null,
-    clearCount: null
-  },
-  "北アメリカ": {
-    challengeCount: null,
-    clearCount: null
-  },
-  "南部アフリカ": {
-    challengeCount: null,
-    clearCount: null
-  },
-  "東アフリカ": {
-    challengeCount: null,
-    clearCount: null
-  },
-  "東南アジア": {
-    challengeCount: null,
-    clearCount: null
-  },
-  "東アジア": {
-    challengeCount: null,
-    clearCount: null
-  },
-  "メラネシア": {
-    challengeCount: null,
-    clearCount: null
-  },
-  "ミクロネシア": {
-    challengeCount: null,
-    clearCount: null
-  },
-  "中央アジア": {
-    challengeCount: null,
-    clearCount: null
-  },
-};

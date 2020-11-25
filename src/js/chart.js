@@ -1,8 +1,10 @@
 const ctx = document.getElementById("myChart").getContext("2d");
 
-
 const createChart = (key) => {
-  const labels = key.filter(k => k.length !== 0)
+  const sortData = Object.keys(key).sort((a, b) => key[a].postion - key[b].postion)
+  const labels = sortData.filter(d => d.length !== 0)
+  const challengeCount = labels.map(label => localStorage.getItem(`${label} challengeCount`))
+  const clearCount = labels.map(label => localStorage.getItem(`${label} clearCount`))
   return new Chart(ctx, {
     // The type of chart we want to create
     type: "bar",
@@ -14,13 +16,13 @@ const createChart = (key) => {
           label: "テストにチャレンジした回数",
           backgroundColor: "#17a2b8",
           borderColor: "#17a2b8",
-          data: [10, 100, 50, 20, 200, 300, 450],
+          data: challengeCount,
         },
         {
           label: "テストをクリアした回数",
           backgroundColor: "rgb(255, 99, 132)",
           borderColor: "rgb(255, 99, 132)",
-          data: [1, 10, 5, 2, 20, 30, 45],
+          data: clearCount,
         },
       ],
     },
@@ -30,3 +32,4 @@ const createChart = (key) => {
   });
 };
 
+export { createChart }

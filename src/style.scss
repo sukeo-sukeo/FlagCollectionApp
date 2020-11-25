@@ -1,0 +1,122 @@
+@import url('https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap');
+  
+
+  button {
+    cursor: pointer;
+  }
+
+  h1 {
+    font-family: 'Indie Flower', cursive;
+    font-size: 50px;
+    cursor: pointer;
+  }
+  
+  #header_wrapper {
+    #sub_region {
+      overflow: scroll;
+      display: flex;
+      height: 110px;
+      .subregion {
+        width: max-content;
+        height: 50px;
+        font-size: 32px;
+        line-height: 40px;
+        flex: none;
+      }
+      .content_wrap {
+        display: flex;
+      }
+      .info {
+        font-size: 12px;
+      }
+    }
+  }
+
+  #game_wrapper {
+    width: 100%;
+    height: 600px;
+    position: absolute;
+      #worldmap {
+        position: absolute;
+        width: 94%;
+        height: 570px;
+        margin: 0 3%;
+        border: 5px solid seashell;
+        box-shadow: 5px 5px 15px black;
+        border-radius: 15px;
+        #name_switch {
+          position: relative;
+          z-index: 1000;
+          left: 5%;
+          margin-top: 10px;
+        }
+        #start_btn {
+          position: relative;
+          z-index: 1000;
+          left: 72%;
+          width: 170px;
+        }
+        #menue_btn {
+          z-index: 1000;
+          position: relative;
+          left: 73%;
+          font-size: 28px;
+        }
+      }
+    
+      #minimap {
+        left: 2%;
+        top: 67%;
+        width: 23%;
+        height: 180px;
+        position: relative;
+        z-index: 1000;
+        border: 1px solid black;
+        box-shadow: 0px 0px 10px black;
+        border-radius: 5px;
+      }
+    
+      #cauntry_flag_wrapper {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        align-content: flex-end;
+        position: relative;
+        z-index: 1000;
+        height: 480px;
+        margin-left: 89%;
+        margin-top: 10px;
+        .flag_pic {
+          margin-top: 5px;
+          margin-right: 15px;
+          max-width: 60px;
+          height: 40px;
+          cursor: pointer;
+        }
+      }
+  }
+  
+  .result_flag {
+        margin-top: 5px;
+        margin-right: 15px;
+        max-width: 60px;
+        height: 40px;
+        cursor: pointer;
+      }
+
+  .modal-content {
+    width: 150%;
+    left: -25%;
+  }
+
+  
+  .clicked {
+    border: 4px solid red;
+    box-shadow: 0px 4px 6px black;
+    margin-bottom: 4px;
+  }
+  .corrected {
+    visibility: hidden;
+  }
+
