@@ -98,12 +98,22 @@
   }
   
   .result_flag {
-        margin-top: 5px;
-        margin-right: 15px;
-        max-width: 60px;
-        height: 40px;
-        cursor: pointer;
-      }
+    margin-top: 5px;
+    margin-right: 15px;
+    height: 50px;
+    cursor: pointer;
+    display: inline-block;
+    width: 85px;
+    overflow: scroll;
+    padding: 5px;
+    font-size: 10px;
+    text-align: center;
+  }
+
+  .pic {
+    padding: 0;
+    vertical-align: baseline;
+  }
 
   .modal-content {
     width: 150%;

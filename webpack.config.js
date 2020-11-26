@@ -2,8 +2,8 @@
 module.exports = {
   // メインとなるJavaScriptファイル（エントリーポイント）
   entry: `./src/index.js`,
-  // mode: `development`,
-  mode: `production`,
+  mode: `development`,
+  // mode: `production`,
   output: {
     path: `${__dirname}/dist`,
     filename: "main.js",

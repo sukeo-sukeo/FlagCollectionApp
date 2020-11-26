@@ -66,30 +66,39 @@ const baseUrl = 'https://restcountries.eu/rest/v2/';
   fetch(baseUrl + 'all')
     .then((res) => res.json())
     .then((data) => {
+      // localStorage.clear();
       for (let i = 0; i < data.length; i++) {
-        const tag = 
-        createTag(
+        if (!data[i].translations.ja) continue;
+        const tag = createTag(
           "span",
           [
             ["class", "result_flag"],
-            ["name", data[i].flag]
+            ["name", data[i].flag],
           ],
           data[i].translations.ja,
           false
-          );
-        
+        );
+
         const src = localStorage.getItem(`${data[i].translations.ja} src`);
-        console.log(JSON.stringify(src));
-        if (tag.getAttribute('name') === src) {
-          createTag('img', [['src', src], ['class', 'result_flag']], false, COLLECTION_WRAPPER)
+        if (tag.getAttribute("name") === src) {
+          createTag(
+            "img",
+            [
+              ["src", src],
+              ["class", "result_flag pic"],
+            ],
+            false,
+            COLLECTION_WRAPPER
+          );
         } else {
-          COLLECTION_WRAPPER.appendChild(tag)
+          tag.style.backgroundColor = 'gainsboro';
+          COLLECTION_WRAPPER.appendChild(tag);
         }
       }
-      const headerDict = makeDict(data)
+      const headerDict = makeDict(data);
       const headerDOMs = createSubregionTags(headerDict);
-      headerDOMs.forEach(dom => {
-        SELECT_BOX.appendChild(dom)
+      headerDOMs.forEach((dom) => {
+        SELECT_BOX.appendChild(dom);
       });
       createChart(dataManage);
       [...popUpDom].forEach((dom) => {
@@ -98,9 +107,15 @@ const baseUrl = 'https://restcountries.eu/rest/v2/';
     })
 })();
 
+window.addEventListener('storage', e => {
+  console.log('ストレージ更新！');
+})
+
+
 RESULT_CLOSE_BTN.addEventListener('click', () => {
   const result = document.getElementById('result')
   initElements(result)
+  location.reload()
 });
 
 SWITCH_BTN.addEventListener('click', () => hiddenName());
@@ -112,6 +127,7 @@ START_BTN.addEventListener('click', () => {
       clearView()
       const val = parseInt(localStorage.getItem(`${subregionName} challengeCount`)) - 1
       localStorage.setItem(`${subregionName} challengeCount`, val);
+      location.reload();
       return
     } else {
       return;
@@ -129,7 +145,7 @@ START_BTN.addEventListener('click', () => {
     const val = parseInt(localStorage.getItem(`${subregionName} challengeCount`)) + 1
     localStorage.setItem(`${subregionName} challengeCount`, val);
   }
-  // localStorage.clear();
+  
 
   setFlagDOM(referMarkers)
   const MARKERS_DOM = document.querySelectorAll(".leaflet-marker-icon");
@@ -213,7 +229,6 @@ SELECT_BOX.addEventListener('click', event => {
 
 const playGame = (TERGET_DOMS) => {
   isPlaying = true
-  correctCount = 10
   if (correctCount === TERGET_DOMS.length / 2 || correctCount === level) {
     gameClear(TERGET_DOMS)
     return
