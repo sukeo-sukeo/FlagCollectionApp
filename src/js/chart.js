@@ -5,8 +5,16 @@ const createChart = (key) => {
   const labels = sortData.filter(d => d.length !== 0)
   const challengeCount = labels.map(label => localStorage.getItem(`${label} challengeCount`))
   const clearCount = labels.map(label => localStorage.getItem(`${label} clearCount`))
-  console.log(labels, challengeCount);
-  console.log(labels, clearCount);
+ 
+  const totalChallengeCnt = challengeCount.reduce((sum, cnt) => Number(sum) + Number(cnt), 0)
+  const totalClearCnt = clearCount.reduce((sum, cnt) => Number(sum) + Number(cnt), 0)
+
+  const chaCnt = document.getElementById('challeCnt')
+  const clearCnt = document.getElementById('clearCnt')
+
+  chaCnt.textContent = totalChallengeCnt
+  clearCnt.textContent = totalClearCnt
+
   return new Chart(ctx, {
     // The type of chart we want to create
     type: "bar",

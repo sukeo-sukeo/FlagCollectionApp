@@ -95,6 +95,13 @@ const baseUrl = 'https://restcountries.eu/rest/v2/';
           COLLECTION_WRAPPER.appendChild(tag);
         }
       }
+
+      const collectionRate = document.getElementById('collection_rate')
+      const flagImgCount = COLLECTION_WRAPPER.getElementsByClassName("pic").length;
+      const rate = ((flagImgCount / (data.length  - 3)) * 100).toFixed(1)
+      collectionRate.textContent = rate + '%'
+
+
       const headerDict = makeDict(data);
       const headerDOMs = createSubregionTags(headerDict);
       headerDOMs.forEach((dom) => {
@@ -106,11 +113,6 @@ const baseUrl = 'https://restcountries.eu/rest/v2/';
       });
     })
 })();
-
-window.addEventListener('storage', e => {
-  console.log('ストレージ更新！');
-})
-
 
 RESULT_CLOSE_BTN.addEventListener('click', () => {
   const result = document.getElementById('result')

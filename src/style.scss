@@ -96,6 +96,19 @@
         }
       }
   }
+
+  #collection_modal {
+    #rate_box {
+      font-size: 24px;
+      #collection_rate {
+        color: red;
+        font-size: 32px;
+      }
+    }
+    .close {
+      margin-left: 0;
+    }
+  }
   
   .result_flag {
     margin-top: 5px;

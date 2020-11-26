@@ -33,6 +33,12 @@
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">
+                  <div id="challe_cnt_box">総チャレンジ回数：
+                    <span id="challeCnt"></span>
+                  </div>
+                  <div id="clear_cnt_box">総クリア回数：
+                    <span id="clearCnt"></span>
+                  </div>
                   <button id="collection_btn" class="btn p-0" data-toggle="modal" data-target="#collection_modal">|||</button>
                 </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -73,7 +79,13 @@
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h2 class="modal-title" id="exampleModalLabel">コレクション</h2>
+              <h2 class="modal-title" id="exampleModalLabel">
+                コレクション
+              </h2>
+              <div id="rate_box">収集率は
+              <span id="collection_rate"></span>
+              です
+              </div>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
