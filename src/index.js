@@ -1,7 +1,7 @@
 'use strict'
 
 import './style.scss';
-import { WORLDMAP, MINIMAP } from './js/world.js';
+import { WORLDMAP, MINIMAP, fetchWorld } from './js/world.js';
 import { createChart } from './js/chart.js';
 
 const dataManage = {
@@ -61,63 +61,34 @@ let nameHidden = false
 
 const baseUrl = 'https://restcountries.eu/rest/v2/';
 
-//ページ来訪時にデータをとりにいきHTMLタグを生成
-(() => {
-  fetch(baseUrl + 'all')
-    .then((res) => res.json())
-    .then((data) => {
-      // localStorage.clear();
-      for (let i = 0; i < data.length; i++) {
-        if (!data[i].translations.ja) continue;
-        const tag = createTag(
-          "span",
-          [
-            ["class", "result_flag"],
-            ["name", data[i].flag],
-          ],
-          data[i].translations.ja,
-          false
-        );
+const fetchData = () => fetch(baseUrl + "all").then((res) => res.json());
 
-        const src = localStorage.getItem(`${data[i].translations.ja} src`);
-        if (tag.getAttribute("name") === src) {
-          createTag(
-            "img",
-            [
-              ["src", src],
-              ["class", "result_flag pic"],
-            ],
-            false,
-            COLLECTION_WRAPPER
-          );
-        } else {
-          tag.style.backgroundColor = 'gainsboro';
-          COLLECTION_WRAPPER.appendChild(tag);
-        }
-      }
-
-      const collectionRate = document.getElementById('collection_rate')
-      const flagImgCount = COLLECTION_WRAPPER.getElementsByClassName("pic").length;
-      const rate = ((flagImgCount / (data.length  - 3)) * 100).toFixed(1)
-      collectionRate.textContent = rate + '%'
-
-
-      const headerDict = makeDict(data);
-      const headerDOMs = createSubregionTags(headerDict);
-      headerDOMs.forEach((dom) => {
-        SELECT_BOX.appendChild(dom);
-      });
-      createChart(dataManage);
-      [...popUpDom].forEach((dom) => {
-        dom.style.visibility = "hidden";
-      });
-    })
-})();
+correctCount = 10
+const firstReading = () => {
+  fetchWorld().addTo(WORLDMAP);
+  fetchWorld().addTo(MINIMAP);
+  fetchData().then((data) => {
+    console.log(data);
+    // localStorage.clear();
+    createCollectionView(data)
+    createChart(dataManage);
+    
+    const headerDict = makeDict(data);
+    const headerDOMs = createSubregionTags(headerDict);
+    headerDOMs.forEach((dom) => {
+      SELECT_BOX.appendChild(dom);
+    });
+    [...popUpDom].forEach((dom) => {
+      dom.style.visibility = "hidden";
+    });
+  })
+};
 
 RESULT_CLOSE_BTN.addEventListener('click', () => {
   const result = document.getElementById('result')
   initElements(result)
-  location.reload()
+  fetchData().then((data) => createCollectionView(data))
+  createChart(dataManage)
 });
 
 SWITCH_BTN.addEventListener('click', () => hiddenName());
@@ -129,7 +100,8 @@ START_BTN.addEventListener('click', () => {
       clearView()
       const val = parseInt(localStorage.getItem(`${subregionName} challengeCount`)) - 1
       localStorage.setItem(`${subregionName} challengeCount`, val);
-      location.reload();
+      //ここでストレージデータをつかう処理を走らせる
+      createChart(dataManage)
       return
     } else {
       return;
@@ -346,7 +318,7 @@ const result_getFlag = (src, name,leng) => {
 
 //  <button id="menue_btn" class="btn p-0" data-toggle="modal" data-target="#status_modal">|||</button>
 
-
+location
 
 const clearView = () => {
   isPlaying = false
@@ -355,6 +327,73 @@ const clearView = () => {
   initElements(FLAG_WRAPPER);
   referMarkers.length = 0;
 };
+
+const createCollectionView = (data) => {
+  (async () => {
+    const get = await COLLECTION_WRAPPER.getElementsByTagName("img")
+    const total = await COLLECTION_WRAPPER.children;
+    document.getElementById('getcount').textContent = `${get.length}/${total.length}`
+  })();
+  initElements(COLLECTION_WRAPPER)
+  for (let i = 0; i < data.length; i++) {
+    if (!data[i].translations.ja) continue;
+    const tag = createTag(
+      "span",
+      [
+        ["class", "result_flag"],
+        ["name", data[i].flag],
+      ],
+      data[i].translations.ja,
+      false
+    );
+
+    const src = localStorage.getItem(`${data[i].translations.ja} src`);
+    if (tag.getAttribute("name") === src) {
+      createTag(
+        "img",
+        [
+          ["src", src],
+          ["class", "result_flag pic"],
+        ],
+        false,
+        COLLECTION_WRAPPER
+      );
+    } else {
+      tag.style.backgroundColor = "gainsboro";
+      COLLECTION_WRAPPER.appendChild(tag);
+    }
+  }
+
+  const collectionRate = document.getElementById("collection_rate");
+  const flagImg = COLLECTION_WRAPPER.getElementsByClassName("pic");
+  const flagImgCount = flagImg.length;
+  const rate = ((flagImgCount / (data.length - 3)) * 100).toFixed(1);
+  collectionRate.textContent = rate + "%";
+  
+  [...flagImg].forEach(img => {
+    img.addEventListener("click", (e) => {
+      const target = e.target
+      getCauntryInfo(target)
+    });
+  })
+
+};
+
+const getCauntryInfo = (tage) => {
+   fetchData().then((data) => {
+     data.forEach((d) => {
+       if (d.flag === tage.getAttribute("src")) {
+         $('.dropdown').addClass('open')
+         console.log(d.area);
+         console.log(d.population);
+         console.log(d.capital);
+         console.log(d.subregion);
+         console.log(d.flag);
+         console.log(d.timezones);
+       }
+     });
+   });
+}
 
 const makeDict = (data) => {
   const dict = new Map();
@@ -595,3 +634,4 @@ const createTag = (elementName, attrs, content, parentNode) => {
   return el;
 };
 
+window.onload = firstReading();

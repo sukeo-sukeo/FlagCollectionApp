@@ -15,14 +15,7 @@ const fetchWorld = () => {
   })
 }
 
-const firstReadingWorld = () => {
-  fetchWorld().addTo(WORLDMAP);
-  fetchWorld().addTo(MINIMAP);
-}
-
 //タイトルクリックで世界地図全体図にズームアウト
 document.getElementById('title').addEventListener("click", () => WORLDMAP.setView(INITIAL_LATLNG, 2));
 
-window.onload = firstReadingWorld()
-
-export { WORLDMAP, MINIMAP};
+export { WORLDMAP, MINIMAP, fetchWorld};

@@ -33,7 +33,7 @@ const createChart = (key) => {
           backgroundColor: "rgb(255, 99, 132)",
           borderColor: "rgb(255, 99, 132)",
           data: clearCount,
-        },
+        }
       ],
     },
 

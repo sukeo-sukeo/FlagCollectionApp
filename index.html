@@ -26,81 +26,98 @@
         <button id="name_switch" class="badge badge-pill badge-dark border-0" style="font-size: 20px;">👀</button>
         <button id="start_btn" class="btn btn-info">テストにチャレンジ</button>
         <button id="menue_btn" class="btn p-0" data-toggle="modal" data-target="#status_modal">|||</button>
-
-        <div class="modal fade" id="status_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-          aria-hidden="true">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">
-                  <div id="challe_cnt_box">総チャレンジ回数：
-                    <span id="challeCnt"></span>
-                  </div>
-                  <div id="clear_cnt_box">総クリア回数：
-                    <span id="clearCnt"></span>
-                  </div>
-                  <button id="collection_btn" class="btn p-0" data-toggle="modal" data-target="#collection_modal">|||</button>
-                </h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div id="status_chart" class="modal-body">
-                <canvas id="myChart"></canvas>
-                <!-- modal中身 -->
-              </div>
-            </div>
-          </div>
-        </div>
-
         <div id="cauntry_flag_wrapper"></div>
       </div>
       <div id="minimap"></div>
-    
-      <div class="modal fade" id="result_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h2 class="modal-title" id="clearMsg"></h2>
-              <button type="button" class="close" id="result_close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div id="result" class="modal-body">
-              <!-- modal中身 -->
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="modal fade" id="collection_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h2 class="modal-title" id="exampleModalLabel">
-                コレクション
-              </h2>
-              <div id="rate_box">収集率は
-              <span id="collection_rate"></span>
-              です
-              </div>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div id="collection" class="modal-body">
-              <!-- modal中身 -->
-            </div>
-          </div>
-        </div>
-      </div>
-
-
     </div>
-    
-  </div>  
+  </div> 
+
+  <!-- リザルト画面 -->
+  <div class="modal fade" id="result_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="clearMsg"></h2>
+          <button type="button" class="close" id="result_close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div id="result" class="modal-body">
+          <!-- modal中身 -->
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- メニュー画面 -->
+  <div class="modal fade" id="status_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div style="display: flex;">
+            <h5 class="modal-title mr-5" id="exampleModalLabel">
+              <div id="challe_cnt_box">総チャレンジ回数：
+                <span id="challeCnt" style="color:#17a2b8; font-size: x-large;"></span>
+              </div>
+            </h5>
+            <h5 class="modal-title">
+              <div id="clear_cnt_box">総クリア回数：
+                <span id="clearCnt" style="color:rgb(255, 99, 132); font-size: x-large;"></span>
+              </div>
+            </h5>
+          </div>
+          <div>
+            <button id="collection_btn" class="btn p-0" data-toggle="modal" data-target="#collection_modal">|||</button>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        </div>
+        <div id="status_chart" class="modal-body">
+          <canvas id="myChart"></canvas>
+          <!-- modal中身 -->
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- コレクション画面 -->
+  <div class="modal fade" id="collection_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="exampleModalLabel">
+            コレクション
+          </h2>
+          <div id="rate_box">収集率は
+            <span id="collection_rate"></span>
+            です
+            <span id="getcount" style="color: gray; font-size: medium;"></span>
+          </div>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="align-self: center;">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div id="collection" class="modal-body">
+          <!-- modal中身 -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dropdown">
+    <!-- <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
+      aria-haspopup="true" aria-expanded="false">
+      Dropdown button
+    </button> -->
+    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+      <a class="dropdown-item" href="#">Action</a>
+      <a class="dropdown-item" href="#">Another action</a>
+      <a class="dropdown-item" href="#">Something else here</a>
+    </div>
+  </div>
 
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
     integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
