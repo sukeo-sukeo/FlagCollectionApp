@@ -16,6 +16,9 @@ const fetchWorld = () => {
 }
 
 //タイトルクリックで世界地図全体図にズームアウト
-document.getElementById('title').addEventListener("click", () => WORLDMAP.setView(INITIAL_LATLNG, 2));
+document.getElementById('title').addEventListener("click", () => {
+  WORLDMAP.setView(INITIAL_LATLNG, 2)
+  MINIMAP.setView(INITIAL_LATLNG, 0)
+});
 
 export { WORLDMAP, MINIMAP, fetchWorld};

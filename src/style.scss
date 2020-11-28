@@ -108,8 +108,15 @@
     .close {
       margin-left: 0;
     }
+    .dropdown-menu {
+      background-size: contain;
+    }
   }
   
+  .modal {
+    overflow: scroll !important;
+  }
+
   .result_flag {
     margin-top: 5px;
     margin-right: 15px;
