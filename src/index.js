@@ -52,6 +52,7 @@ const Q_LEVEL = {
 
 let level = Q_LEVEL.normal;
 
+let correctCount = null;
 let mistakeCount = null;
 
 let referMarkers = [];
@@ -98,6 +99,7 @@ RESULT_CLOSE_BTN.addEventListener("click", () => {
 SWITCH_BTN.addEventListener("click", () => hiddenName());
 
 START_BTN.addEventListener("click", () => {
+  // correctCount = 10;
   if (isPlaying) {
     if (confirm("テストをあきらめて地域選択にもどりますか？")) {
       changeBtn("テストにチャレンジ");
