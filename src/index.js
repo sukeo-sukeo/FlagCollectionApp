@@ -52,7 +52,6 @@ const Q_LEVEL = {
 
 let level = Q_LEVEL.normal;
 
-let correctCount = null;
 let mistakeCount = null;
 
 let referMarkers = [];
@@ -72,9 +71,7 @@ const firstReading = () => {
   fetchData("all").then((data) => {
     console.log(data);
     // localStorage.clear();
-    // createCollectionView(data);
-    // createChart(dataManage);
-
+    
     const headerDict = makeDict(data);
     const headerDOMs = createSubregionTags(headerDict);
     headerDOMs.forEach((dom) => {
@@ -101,7 +98,6 @@ RESULT_CLOSE_BTN.addEventListener("click", () => {
 SWITCH_BTN.addEventListener("click", () => hiddenName());
 
 START_BTN.addEventListener("click", () => {
-  correctCount = 10;
   if (isPlaying) {
     if (confirm("テストをあきらめて地域選択にもどりますか？")) {
       changeBtn("テストにチャレンジ");
@@ -169,15 +165,12 @@ SELECT_BOX.addEventListener("click", (event) => {
     })
     .then((data) => {
       //マーカーを設置
-      console.time("test");
-      const markers = data.map((d) => {
+      const markers = data.map(d => {
         return makeMarker(
           [d.latlng[0], d.latlng[1]],
-          d.translations.ja,
-          "link"
+          d.translations.ja
         );
       });
-      console.timeEnd("test");
 
       //マーカーデータの参照を作成
       referMarkers = markers;
@@ -406,8 +399,8 @@ const createImgTags = (src, data, i) => {
   const childTag = createTag(
     "ul",
     [
-      ["class", "dropdown-menu"],
-      ["style", "width: 250px;"],
+      ["class", "dropdown-menu bg-transparent"],
+      ["style", "width: 250px; border: none;"],
       ["aria-labelledby", "collection_flag_toggle"],
     ],
     false,
@@ -416,19 +409,81 @@ const createImgTags = (src, data, i) => {
 
   const dataObj = createComparisonData(data, i);
   
-  createTag("li", false, "国名: " + dataObj.name, childTag);
-  createTag("li", false, "首都: " + dataObj.capital, childTag);
-  createTag("li", false, "人口: " + dataObj.papulation, childTag);
-  createTag("li", false, "広さ: " + dataObj.area, childTag);
-  createTag("li", false, "地域: " + dataObj.subregion, childTag);
-  createTag("li", false, `日本の${dataObj.popldiff}倍の人口`, childTag);
-  createTag("li", false, `日本の${dataObj.areadiff}倍の広さ`, childTag);
-  createTag("li", ['name', dataObj.code], `日本と約${dataObj.jisa}時間違います`, childTag);
-  createTag("li", false, `この国は今${dataObj.time.M}月${dataObj.time.D}日(${dataObj.time.W})${dataObj.time.H}時${dataObj.time.Mi}分です`, childTag);
+  createTag(
+    "li",
+    ["class", "list-group-item p-2 bg-dark text-white"],
+    "国名: " + dataObj.name,
+    childTag
+  );
+  createTag(
+    "li",
+    ["class", "list-group-item p-2 bg-dark text-white"],
+    "首都: " + dataObj.capital,
+    childTag
+  );
+  createTag(
+    "li",
+    ["class", "list-group-item p-2 bg-dark text-white"],
+    "人口: " + dataObj.papulation + "人",
+    childTag
+  );
+  createTag(
+    "li",
+    ["class", "list-group-item p-2 bg-dark text-white"],
+    "広さ: " + dataObj.area + "㎢",
+    childTag
+  );
+  createTag(
+    "li",
+    ["class", "list-group-item p-2 bg-dark text-white"],
+    "地域: " + dataObj.subregion,
+    childTag
+  );
   createTag(
     "li",
     [
-      ["class", "bigflag_btn"],
+      ["class", "list-group-item p-1 bg-light border-bottom-0"],
+      ["style", "font-size: 12px;"],
+    ],
+    `日本の${dataObj.popldiff}倍の人口`,
+    childTag
+  );
+  createTag(
+    "li",
+    [
+      ["class", "list-group-item p-1 bg-light border-bottom-0 border-top-0"],
+      ["style", "font-size: 12px;"],
+    ],
+    `日本の${dataObj.areadiff}倍の広さ`,
+    childTag
+  );
+  createTag(
+    "li",
+    [
+      ["class", "list-group-item p-1 bg-light  border-bottom-0 border-top-0"],
+      ["style", "font-size: 12px;"],
+      ["name", dataObj.code],
+    ],
+    `日本と約${dataObj.jisa}時間違います`,
+    childTag
+  );
+  createTag(
+    "li",
+    [
+      ["class", "list-group-item p-1 bg-light border-bottom-0 border-top-0"],
+      ["style", "font-size: 12px;"],
+    ],
+    `この国は今${dataObj.time.M}月${dataObj.time.D}日(${dataObj.time.W})${dataObj.time.H}時${dataObj.time.Mi}分です`,
+    childTag
+  );
+  createTag(
+    "li",
+    [
+      [
+        "class",
+        "bigflag_btn list-group-item p-2 bg-info text-white  border-top-0",
+      ],
+      ["style", "font-size: 12px;"],
       ["name", data[i].name],
     ],
     "国旗を見る",
@@ -465,8 +520,8 @@ const createComparisonData = (data, i) => {
   return {
     name: data[i].translations.ja,
     capital: data[i].capital,
-    papulation: data[i].population,
-    area: data[i].area,
+    papulation: Number(data[i].population).toLocaleString(),
+    area: Number(data[i].area).toLocaleString(),
     subregion: data[i].subregion,
     areadiff: (data[i].area / jaArea).toFixed(2),
     popldiff: (data[i].population / jaPopl).toFixed(2),
@@ -475,10 +530,10 @@ const createComparisonData = (data, i) => {
       D: worldTime.getDate(),
       W: weekStr[worldTime.getDay()],
       H: worldTime.getHours(),
-      Mi: worldTime.getMinutes()
+      Mi: worldTime.getMinutes(),
     },
     jisa: 9 - Number(code + jisa),
-    code: code
+    code: code,
   };
 };
 
@@ -513,11 +568,12 @@ const createSubregionTags = (dict) => {
         /*tag*/ "button",
         [
           [/*attr1*/ "id", `${key.replace(/\s+/g, "_")}`],
-          [/*attr2*/ "class", `subregion btn btn-dark py-1 px-3`],
+          [/*attr2*/ "class", `subregion btn btn-outline-dark py-1 px-3`],
         ],
         /*value*/ renameKey[i],
         /*append*/ outlineTag
       );
+      
       const innerTag = createTag(
         "div",
         ["class", "content_wrap m-0 p-0"],
@@ -536,13 +592,30 @@ const createSubregionTags = (dict) => {
         "",
         innerTag
       );
+      const getval1 = () => {
+        const val = localStorage.getItem(`${renameKey[i]} challengeCount`);
+        if (val) {
+          return val;
+        } else {
+          return 0;
+        }
+      };
+
+      const getval2 = () => {
+        const val = localStorage.getItem(`${renameKey[i]} clearCount`);
+        if (val) {
+          return val;
+        } else {
+          return 0;
+        }
+      };
       createTag(
-        "a",
+        "p",
         [
           ["class", "info subregion_content m-0 p-0"],
           ["href", "#"],
         ],
-        `${renameKey[i]}を調べる`,
+        `チャレンジ: ${getval1()}  クリア: ${getval2()}`,
         outlineTag
       );
       beforeSortData.push(outlineTag);
@@ -651,14 +724,12 @@ const changeBtn = (text) => {
   }
 };
 
-const makeMarker = (lat_lng, name, link) => {
+const makeMarker = (lat_lng, name) => {
   const Markers_shape = [];
   const Markers_shape_pos = [];
   const Markers_shape_nam = [];
-  const Markers_shape_lnk = [];
   Markers_shape_pos[0] = lat_lng;
   Markers_shape_nam[0] = name;
-  Markers_shape_lnk[0] = `<a href=${link} target='_blank'>${name}へのリンク</a>`;
   Markers_shape[0] = L.marker([
     Markers_shape_pos[0][0],
     Markers_shape_pos[0][1],

@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/luminous-lightbox@2.3.2/dist/luminous-basic.min.css">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" />
@@ -53,7 +52,7 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <div style="display: flex;">
+          <div style="display: flex;" class="my-0 mx-auto">
             <h5 class="modal-title mr-5" id="exampleModalLabel2">
               <div id="challe_cnt_box">総チャレンジ回数：
                 <span id="challeCnt" style="color:#17a2b8; font-size: x-large;"></span>
@@ -109,16 +108,17 @@
     aria-hidden="true">
     <div class="modal-dialog my-0 mx-auto" role="document">
       <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="flagname" class="my-0 mx-auto"></h2>
+        </div>
         <div id="bigflag" class="modal-body">
           <!-- modal中身 -->
-          <p id="flagname"></p>
           <img id="bigflagimg" style="width: -webkit-fill-available; max-width: 70vw;">
         </div>
       </div>
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/luminous-lightbox@2.3.2/dist/luminous.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
       integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"

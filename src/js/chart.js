@@ -5,6 +5,19 @@ const createChart = (key) => {
   const labels = sortData.filter(d => d.length !== 0)
   const challengeCount = labels.map(label => localStorage.getItem(`${label} challengeCount`))
   const clearCount = labels.map(label => localStorage.getItem(`${label} clearCount`))
+
+  const infos = document.getElementsByClassName('info');
+  [...infos].forEach((info, i) => {
+    let valCha = challengeCount[i]
+    let valCle = clearCount[i]
+    if (!valCha) {
+      valCha = 0
+    }
+    if (!valCle) {
+      valCle = 0
+    }
+    info.textContent = `チャレンジ: ${valCha}  クリア: ${valCle}`
+  })
  
   const totalChallengeCnt = challengeCount.reduce((sum, cnt) => Number(sum) + Number(cnt), 0)
   const totalClearCnt = clearCount.reduce((sum, cnt) => Number(sum) + Number(cnt), 0)
