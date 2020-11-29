@@ -1,77 +1,80 @@
-'use strict'
+"use strict";
 
-import './style.scss';
-import { WORLDMAP, MINIMAP, fetchWorld } from './js/world.js';
-import { createChart } from './js/chart.js';
+import "./style.scss";
+import { WORLDMAP, MINIMAP, fetchWorld } from "./js/world.js";
+import { createChart } from "./js/chart.js";
 
 const dataManage = {
-  南アジア: {postion: 0},
-  北ヨーロッパ: {postion: 1},
-  南ヨーロッパ: {postion: 1},
-  北アフリカ: {postion: 3},
-  ポリネシア: {postion: 6},
-  中央アフリカ: {postion: 3},
-  カリブ海: {postion: 6},
-  "": {postion: 0},
-  南アメリカ: {postion: 2},
-  西アジア: {postion: 0},
-  オーストラリア: {postion: 5},
-  西ヨーロッパ: {postion: 1},
-  東ヨーロッパ: {postion: 1},
-  中央アメリカ: {postion: 2},
-  西アフリカ: {postion: 3},
-  北アメリカ: {postion: 1},
-  南部アフリカ: {postion: 3},
-  東アフリカ: {postion: 3},
-  東南アジア: {postion: 0},
-  東アジア: {postion: 0},
-  メラネシア: {postion: 6},
-  ミクロネシア: {postion: 6},
-  中央アジア: {postion: 0},
+  南アジア: { postion: 0 },
+  北ヨーロッパ: { postion: 1 },
+  南ヨーロッパ: { postion: 1 },
+  北アフリカ: { postion: 3 },
+  ポリネシア: { postion: 6 },
+  中央アフリカ: { postion: 3 },
+  カリブ海: { postion: 6 },
+  "": { postion: 0 },
+  南アメリカ: { postion: 2 },
+  西アジア: { postion: 0 },
+  オーストラリア: { postion: 5 },
+  西ヨーロッパ: { postion: 1 },
+  東ヨーロッパ: { postion: 1 },
+  中央アメリカ: { postion: 2 },
+  西アフリカ: { postion: 3 },
+  北アメリカ: { postion: 1 },
+  南部アフリカ: { postion: 3 },
+  東アフリカ: { postion: 3 },
+  東南アジア: { postion: 0 },
+  東アジア: { postion: 0 },
+  メラネシア: { postion: 6 },
+  ミクロネシア: { postion: 6 },
+  中央アジア: { postion: 0 },
 };
 
-const SELECT_BOX = document.getElementById('sub_region')
-const START_BTN = document.getElementById('start_btn')
-const SWITCH_BTN = document.getElementById('name_switch')
-const FLAG_WRAPPER = document.getElementById('cauntry_flag_wrapper')
-const RESULT_CLOSE_BTN = document.getElementById('result_close')
-const COLLECTION_WRAPPER = document.getElementById('collection')
+const SELECT_BOX = document.getElementById("sub_region");
+const START_BTN = document.getElementById("start_btn");
+const SWITCH_BTN = document.getElementById("name_switch");
+const FLAG_WRAPPER = document.getElementById("cauntry_flag_wrapper");
+const RESULT_CLOSE_BTN = document.getElementById("result_close");
+const COLLECTION_WRAPPER = document.getElementById("collection");
 
+const collectionBtn = document.getElementById('collection_btn')
+const menuBtn = document.getElementById('menue_btn')
 const popUpDom = document.getElementsByClassName("leaflet-popup-pane");
 
-const MARKER_URL = 'https://unpkg.com/leaflet@1.4.0/dist/images/marker-icon-2x.png'
+const MARKER_URL =
+  "https://unpkg.com/leaflet@1.4.0/dist/images/marker-icon-2x.png";
 
 const Q_LEVEL = {
-  easy:    5,
+  easy: 5,
   normal: 10,
-  hard:   15
-}
+  hard: 15,
+};
 
-let level = Q_LEVEL.normal
+let level = Q_LEVEL.normal;
 
-let correctCount = null
-let mistakeCount = null
+let correctCount = null;
+let mistakeCount = null;
 
-let referMarkers = []
-let referCircle
-let subregionName
+let referMarkers = [];
+let referCircle;
+let subregionName;
 
-let isPlaying = false
-let nameHidden = false
+let isPlaying = false;
+let nameHidden = false;
 
-const baseUrl = 'https://restcountries.eu/rest/v2/';
+const baseUrl = "https://restcountries.eu/rest/v2/";
 
 const fetchData = (str) => fetch(baseUrl + str).then((res) => res.json());
 
 const firstReading = () => {
   fetchWorld().addTo(WORLDMAP);
   fetchWorld().addTo(MINIMAP);
-  fetchData('all').then((data) => {
+  fetchData("all").then((data) => {
     console.log(data);
     // localStorage.clear();
-    createCollectionView(data)
-    createChart(dataManage);
-    
+    // createCollectionView(data);
+    // createChart(dataManage);
+
     const headerDict = makeDict(data);
     const headerDOMs = createSubregionTags(headerDict);
     headerDOMs.forEach((dom) => {
@@ -80,112 +83,124 @@ const firstReading = () => {
     [...popUpDom].forEach((dom) => {
       dom.style.visibility = "hidden";
     });
-  })
+  });
 };
 
-RESULT_CLOSE_BTN.addEventListener('click', () => {
-  const result = document.getElementById('result')
-  initElements(result)
-  fetchData('all').then((data) => createCollectionView(data))
-  createChart(dataManage)
+collectionBtn.addEventListener('click', () => fetchData("all").then((data) => createCollectionView(data)))
+
+menuBtn.addEventListener('click', () => createChart(dataManage))
+
+
+RESULT_CLOSE_BTN.addEventListener("click", () => {
+  const result = document.getElementById("result");
+  initElements(result);
+  // fetchData("all").then((data) => createCollectionView(data));
+  // createChart(dataManage);
 });
 
-SWITCH_BTN.addEventListener('click', () => hiddenName());
+SWITCH_BTN.addEventListener("click", () => hiddenName());
 
-START_BTN.addEventListener('click', () => {
+START_BTN.addEventListener("click", () => {
   correctCount = 10;
   if (isPlaying) {
     if (confirm("テストをあきらめて地域選択にもどりますか？")) {
-      changeBtn('テストにチャレンジ')
-      clearView()
-      const val = parseInt(localStorage.getItem(`${subregionName} challengeCount`)) - 1
+      changeBtn("テストにチャレンジ");
+      clearView();
+      const val =
+        parseInt(localStorage.getItem(`${subregionName} challengeCount`)) - 1;
       localStorage.setItem(`${subregionName} challengeCount`, val);
-      //ここでストレージデータをつかう処理を走らせる
-      createChart(dataManage)
-      return
+      // //ここでストレージデータをつかう処理を走らせる
+      // createChart(dataManage);
+      return;
     } else {
       return;
     }
   }
 
   if (referMarkers.length === 0) {
-    alert('地域を選択してください')
-    return
+    alert("地域を選択してください");
+    return;
   }
 
   if (!localStorage[`${subregionName} challengeCount`]) {
-    localStorage.setItem(`${subregionName} challengeCount`, 1)
+    localStorage.setItem(`${subregionName} challengeCount`, 1);
   } else {
-    const val = parseInt(localStorage.getItem(`${subregionName} challengeCount`)) + 1
+    const val =
+      parseInt(localStorage.getItem(`${subregionName} challengeCount`)) + 1;
     localStorage.setItem(`${subregionName} challengeCount`, val);
   }
-  
 
-  setFlagDOM(referMarkers)
+  setFlagDOM(referMarkers);
   const MARKERS_DOM = document.querySelectorAll(".leaflet-marker-icon");
   const FLAGS_DOM = document.querySelectorAll(".flag_pic");
-  MARKERS_DOM.forEach(d => {
-    d.setAttribute('src', MARKER_URL)
+  MARKERS_DOM.forEach((d) => {
+    d.setAttribute("src", MARKER_URL);
     d.style.width = "30px";
     d.style.height = "30px";
-  })
-  changeBtn('もどる')
+  });
+  changeBtn("もどる");
 
-  const TARGET_DOMS = [...MARKERS_DOM, ...FLAGS_DOM]
-  playGame(TARGET_DOMS)
-
-})
+  const TARGET_DOMS = [...MARKERS_DOM, ...FLAGS_DOM];
+  playGame(TARGET_DOMS);
+});
 
 //エリア選択で
-SELECT_BOX.addEventListener('click', event => {
+SELECT_BOX.addEventListener("click", (event) => {
   if (event.target.className.split(" ")[0] !== "subregion") {
     return;
   }
   if (isPlaying) {
-    return
+    return;
   }
-  
-  referMarkers.forEach(d => {
-    d.closePopup()
-  })
 
-  initElements(FLAG_WRAPPER)
+  referMarkers.forEach((d) => {
+    d.closePopup();
+  });
 
-  subregionName = event.target.textContent
+  initElements(FLAG_WRAPPER);
+
+  subregionName = event.target.textContent;
   const target = event.target.id.replace(/_/g, " ");
-  fetch(baseUrl + 'subregion/' + target)
+  fetch(baseUrl + "subregion/" + target)
     .then((res) => res.json())
     .then((data) => {
       //dataを整形
-      return shuffle(formatData(data))
+      return shuffle(formatData(data));
     })
     .then((data) => {
       //マーカーを設置
-      console.time('test')
-      const markers = data.map(d => {
-        return makeMarker([d.latlng[0], d.latlng[1]], d.translations.ja, 'link')
-      })
-    console.timeEnd('test')
+      console.time("test");
+      const markers = data.map((d) => {
+        return makeMarker(
+          [d.latlng[0], d.latlng[1]],
+          d.translations.ja,
+          "link"
+        );
+      });
+      console.timeEnd("test");
 
       //マーカーデータの参照を作成
-      referMarkers = markers
+      referMarkers = markers;
 
       //ズームインの為の座標値を算出
-      let sumLat = null
-      let sumLng = null
-     
-      markers.forEach(marker => {
-        sumLat += marker._latlng.lat
-        sumLng += marker._latlng.lng
-        marker.addTo(WORLDMAP)
-      }) 
+      let sumLat = null;
+      let sumLng = null;
+
+      markers.forEach((marker) => {
+        sumLat += marker._latlng.lat;
+        sumLng += marker._latlng.lng;
+        marker.addTo(WORLDMAP);
+      });
 
       //ズームしてポインタを表示
       WORLDMAP.setView([sumLat / markers.length, sumLng / markers.length], 4);
-      const circle = makeCircle(sumLat / markers.length, sumLng / markers.length)
-      referCircle = circle
-      circle.addTo(MINIMAP)
-      return data
+      const circle = makeCircle(
+        sumLat / markers.length,
+        sumLng / markers.length
+      );
+      referCircle = circle;
+      circle.addTo(MINIMAP);
+      return data;
     })
     .then((data) => {
       const MARKERS_DOM = document.querySelectorAll(".leaflet-marker-icon");
@@ -196,25 +211,24 @@ SELECT_BOX.addEventListener('click', event => {
         DOM.setAttribute("src", data[i].flag);
         DOM.style.width = "60px";
         DOM.style.height = "40px";
-      })
-    })
-})
-
+      });
+    });
+});
 
 const playGame = (TERGET_DOMS) => {
-  isPlaying = true
+  isPlaying = true;
   if (correctCount === TERGET_DOMS.length / 2 || correctCount === level) {
-    gameClear(TERGET_DOMS)
-    return
+    gameClear(TERGET_DOMS);
+    return;
   }
-  let answers = []
+  let answers = [];
   TERGET_DOMS.forEach((target_dom) => {
-    target_dom.onclick = e => {
-      const ansContainer = e.target.className.split(' ')[0]
-      const ansLatLng = e.target.className.split(' ')[3]
+    target_dom.onclick = (e) => {
+      const ansContainer = e.target.className.split(" ")[0];
+      const ansLatLng = e.target.className.split(" ")[3];
       if (
         // １枚めと同じcontainerは選択できない
-        answers.length === 1 && answers[0][0] === ansContainer ||
+        (answers.length === 1 && answers[0][0] === ansContainer) ||
         // 正解したマーカーは選択できない
         e.target.getAttribute("name") === "corrected"
       ) {
@@ -232,29 +246,29 @@ const playGame = (TERGET_DOMS) => {
 
 const judge = (answers, TERGET_DOMS) => {
   if (answers[0][1] === answers[1][1]) {
-    console.log('正解！');
-    const markerDom = getImgSrc(answers).markerDom
-    const flagSrc = getImgSrc(answers).flagSrc
-    const flagDom = getImgSrc(answers).flagDom
+    console.log("正解！");
+    const markerDom = getImgSrc(answers).markerDom;
+    const flagSrc = getImgSrc(answers).flagSrc;
+    const flagDom = getImgSrc(answers).flagDom;
     setTimeout(() => {
-      changeClass(/*del =*/ "clicked", /*add =*/ false)
-      flagDom.classList.add('corrected')
-      markerDom.setAttribute('name', 'corrected')
-      markerDom.setAttribute('src', flagSrc)
-      markerDom.style.width = '40px'
-      markerDom.style.height = '30px'
-    }, 1000)
-    correctCount++
+      changeClass(/*del =*/ "clicked", /*add =*/ false);
+      flagDom.classList.add("corrected");
+      markerDom.setAttribute("name", "corrected");
+      markerDom.setAttribute("src", flagSrc);
+      markerDom.style.width = "40px";
+      markerDom.style.height = "30px";
+    }, 1000);
+    correctCount++;
     console.log(correctCount);
   } else {
-    console.log('間違い');
-    setTimeout(() => changeClass(/*del =*/ "clicked", /*add =*/ false), 1000)
-    mistakeCount++
+    console.log("間違い");
+    setTimeout(() => changeClass(/*del =*/ "clicked", /*add =*/ false), 1000);
+    mistakeCount++;
     console.log(mistakeCount);
   }
-  answers.length = 0
-  playGame(TERGET_DOMS)
-}
+  answers.length = 0;
+  playGame(TERGET_DOMS);
+};
 
 const gameClear = (data) => {
   isPlaying = false;
@@ -267,13 +281,15 @@ const gameClear = (data) => {
     localStorage.setItem(`${subregionName} clearCount`, val);
   }
 
-  const getFlagImgs = data.filter(d => d.className.split(' ')[0] === 'flag_pic')
-  console.log(getFlagImgs[0].getAttribute('name'));
-  const src = getFlagImgs.map(img => img.getAttribute('src'))
-  const name = getFlagImgs.map(img => img.getAttribute('name'))
-  console.log(src, name)
+  const getFlagImgs = data.filter(
+    (d) => d.className.split(" ")[0] === "flag_pic"
+  );
+  console.log(getFlagImgs[0].getAttribute("name"));
+  const src = getFlagImgs.map((img) => img.getAttribute("src"));
+  const name = getFlagImgs.map((img) => img.getAttribute("name"));
+  console.log(src, name);
 
-  const msg = document.getElementById('clearMsg')
+  const msg = document.getElementById("clearMsg");
   $("#result_modal").modal();
   console.log(mistakeCount);
   if (!mistakeCount) {
@@ -286,20 +302,20 @@ const gameClear = (data) => {
     result_getFlag(src, name, 5);
     msg.textContent = "Get two flags!";
     clearView();
-    return
+    return;
   }
   if (mistakeCount <= 3) {
     result_getFlag(src, name, 3);
     msg.textContent = "Get three flags!";
     clearView();
-    return
+    return;
   }
   result_getFlag(src, name, 1);
   msg.textContent = "Get one flags!";
   clearView();
-}
+};
 
-const result_getFlag = (src, name,leng) => {
+const result_getFlag = (src, name, leng) => {
   const result = document.getElementById("result");
   for (let i = 0; i < leng; i++) {
     createTag(
@@ -312,12 +328,12 @@ const result_getFlag = (src, name,leng) => {
       false,
       result
     );
-    localStorage.setItem(`${name[i]} src`, src[i])
+    localStorage.setItem(`${name[i]} src`, src[i]);
   }
-}
+};
 
 const clearView = () => {
-  isPlaying = false
+  isPlaying = false;
   correctCount = 0;
   mistakeCount = 0;
   initElements(FLAG_WRAPPER);
@@ -326,11 +342,13 @@ const clearView = () => {
 
 const createCollectionView = (data) => {
   (async () => {
-    const get = await COLLECTION_WRAPPER.getElementsByTagName("img")
+    const get = await COLLECTION_WRAPPER.getElementsByTagName("img");
     const total = await COLLECTION_WRAPPER.children;
-    document.getElementById('getcount').textContent = `${get.length}/${total.length}`
+    document.getElementById(
+      "getcount"
+    ).textContent = `${get.length}/${total.length}`;
   })();
-  initElements(COLLECTION_WRAPPER)
+  initElements(COLLECTION_WRAPPER);
   for (let i = 0; i < data.length; i++) {
     if (!data[i].translations.ja) continue;
     const tag = createTag(
@@ -345,8 +363,8 @@ const createCollectionView = (data) => {
 
     const src = localStorage.getItem(`${data[i].translations.ja} src`);
     if (tag.getAttribute("name") === src) {
-      const parent = createImgTags(src, data, i)
-      COLLECTION_WRAPPER.appendChild(parent)
+      const parent = createImgTags(src, data, i);
+      COLLECTION_WRAPPER.appendChild(parent);
     } else {
       tag.style.backgroundColor = "gainsboro";
       COLLECTION_WRAPPER.appendChild(tag);
@@ -358,7 +376,6 @@ const createCollectionView = (data) => {
   const flagImgCount = flagImg.length;
   const rate = ((flagImgCount / (data.length - 3)) * 100).toFixed(1);
   collectionRate.textContent = rate + "%";
-
 };
 
 const createImgTags = (src, data, i) => {
@@ -376,7 +393,8 @@ const createImgTags = (src, data, i) => {
     [
       ["src", src],
       ["class", "result_flag pic dropdown-toggle"],
-      ["id", "dropdownMenuButton"],
+      ["name", data[i].name],
+      ["id", "collection_flag_toggle"],
       ["data-toggle", "dropdown"],
       ["aria-haspopup", "true"],
       ["aria-expanded", "false"],
@@ -384,75 +402,86 @@ const createImgTags = (src, data, i) => {
     false,
     parentTag
   );
-  
+
   const childTag = createTag(
     "ul",
     [
       ["class", "dropdown-menu"],
-      ["style", `background-image: url(${data[i].flag});`],
-      ["aria-labelledby", "dropdownMenuButton"],
+      ["style", "width: 250px;"],
+      ["aria-labelledby", "collection_flag_toggle"],
     ],
     false,
     parentTag
   );
 
-  const dataObj = createComparisonData(data, i)
-  console.log(dataObj);
-  createTag("li", false, '国名: ' + data[i].translations.ja, childTag);
-  createTag("li", false, '首都: ' + data[i].capital, childTag);
-  createTag("li", false, '人口: ' + data[i].population, childTag);
-  createTag("li", false, '広さ: ' + data[i].area, childTag);
-  createTag("li", false, '地域: ' + data[i].subregion, childTag);
-  createTag("li", false, 'この国はいま' + data[i].timezones + 'です', childTag);
-  createTag("li", [['class', 'bigflag_btn'],["name", data[i].name]], '国旗を見る', childTag);
+  const dataObj = createComparisonData(data, i);
+  
+  createTag("li", false, "国名: " + dataObj.name, childTag);
+  createTag("li", false, "首都: " + dataObj.capital, childTag);
+  createTag("li", false, "人口: " + dataObj.papulation, childTag);
+  createTag("li", false, "広さ: " + dataObj.area, childTag);
+  createTag("li", false, "地域: " + dataObj.subregion, childTag);
+  createTag("li", false, `日本の${dataObj.popldiff}倍の人口`, childTag);
+  createTag("li", false, `日本の${dataObj.areadiff}倍の広さ`, childTag);
+  createTag("li", ['name', dataObj.code], `日本と約${dataObj.jisa}時間違います`, childTag);
+  createTag("li", false, `この国は今${dataObj.time.M}月${dataObj.time.D}日(${dataObj.time.W})${dataObj.time.H}時${dataObj.time.Mi}分です`, childTag);
+  createTag(
+    "li",
+    [
+      ["class", "bigflag_btn"],
+      ["name", data[i].name],
+    ],
+    "国旗を見る",
+    childTag
+  );
 
-  const bigflags = document.getElementsByClassName('bigflag_btn');
-  const bigflag = document.getElementById('bigflag');
+  const bigflags = document.getElementsByClassName("bigflag_btn");
+  const bigflag = document.getElementById("bigflagimg");
+  const flagname = document.getElementById("flagname");
   [...bigflags].forEach((flag) => {
-    flag.onclick = e => {
-      initElements(bigflag)
+    flag.onclick = (e) => {
       const cauntryName = e.target.getAttribute("name");
-      fetchData('name/' + cauntryName).then(data => {
-        console.log(data[0].flag);
-        createTag(
-          "img",
-          [
-            ["src", data[0].flag],
-            ["style", "width: -webkit-fill-available; max-width: 70vw;"],
-          ],
-          false,
-          bigflag
-        );
+      fetchData("name/" + cauntryName).then((data) => {
+        flagname.textContent = data[0].translations.ja;
+        bigflag.setAttribute("src", data[0].flag);
         $("#bigflag_modal").modal();
-      })
-    }
-  })
-  return parentTag
-}
+      });
+    };
+  });
+  return parentTag;
+};
 
 const createComparisonData = (data, i) => {
-  const jaArea = 377930
-  const jaPopl = 126960000
-  const today = new Date()
+  const jaArea = 377930;
+  const jaPopl = 126960000;
+  const today = new Date();
   const japanTime = today.getTime() - 9 * (60 * 60 * 1000);
-  const jisa = parseInt(data[i].timezones[0].split(':')[0].slice(4, 6));
-  const code = data[i].timezones[0].split(':')[0][3];
+  const jisa = parseInt(data[i].timezones[0].split(":")[0].slice(4, 6));
+  const code = data[i].timezones[0].split(":")[0][3];
   const worldTime = new Date(
     Number(japanTime) + Number(code + jisa * 60 * 60 * 1000)
   );
-  const jisatime = 9 - Number(code + jisa)
-  console.log(`${worldTime.getHours()}:${worldTime.getMinutes()}`);
-  const dataObj = {}
-  let calcArea = (data[i].area / jaArea).toFixed(2)
-  let calcPopl = (data[i].population / jaPopl).toFixed(2)
-  dataObj.area = `日本の${calcArea}倍の広さ` 
-  dataObj.popl = `日本の${calcPopl}倍の人口`
-  dataObj.time = `今は${worldTime.getDate()}日の${worldTime.getHours()}:${worldTime.getMinutes()}です`;
-  dataObj.jisa = `時差は約${jisatime}時間です`;
-  return dataObj
-}
+  const weekStr = ["日", "月", "火", "水", "木", "金", "土"];
+  return {
+    name: data[i].translations.ja,
+    capital: data[i].capital,
+    papulation: data[i].population,
+    area: data[i].area,
+    subregion: data[i].subregion,
+    areadiff: (data[i].area / jaArea).toFixed(2),
+    popldiff: (data[i].population / jaPopl).toFixed(2),
+    time: {
+      M: worldTime.getMonth() + 1,
+      D: worldTime.getDate(),
+      W: weekStr[worldTime.getDay()],
+      H: worldTime.getHours(),
+      Mi: worldTime.getMinutes()
+    },
+    jisa: 9 - Number(code + jisa),
+    code: code
+  };
+};
 
-  
 const makeDict = (data) => {
   const dict = new Map();
   data.forEach((e) => {
@@ -467,34 +496,63 @@ const makeDict = (data) => {
 };
 
 const createSubregionTags = (dict) => {
-  let i = 0
-  let renameKey = []
+  let i = 0;
+  let renameKey = [];
   let japaneseKey = Object.keys(dataManage);
-  let beforeSortData = []
+  let beforeSortData = [];
   dict.forEach((val, key) => {
-    renameKey.push(key.replace(key, japaneseKey[i]))
+    renameKey.push(key.replace(key, japaneseKey[i]));
     if (key) {
-      const outlineTag = createTag('div', ['class', 'select_btn my-1 mr-3 ' + dataManage[japaneseKey[i]].postion], false, false)
+      const outlineTag = createTag(
+        "div",
+        ["class", "select_btn my-1 mr-3 " + dataManage[japaneseKey[i]].postion],
+        false,
+        false
+      );
       createTag(
-          /*tag*/     "button",
+        /*tag*/ "button",
         [
           [/*attr1*/ "id", `${key.replace(/\s+/g, "_")}`],
-          [/*attr2*/ "class", `subregion btn btn-dark py-1 px-3`]
+          [/*attr2*/ "class", `subregion btn btn-dark py-1 px-3`],
         ],
-          /*value*/   renameKey[i],
-          /*append*/  outlineTag
+        /*value*/ renameKey[i],
+        /*append*/ outlineTag
       );
-      const innerTag = createTag('div', ['class', 'content_wrap m-0 p-0'], false, outlineTag)
-      createTag('p', ['class', 'cauntry_count subregion_content m-0 p-0'], `${val}カ国`, innerTag)
-      createTag("p", ["class", "level subregion_content m-0 p-0"], '', innerTag);
-      createTag('a', [['class', 'info subregion_content m-0 p-0'], ['href', '#']], `${renameKey[i]}を調べる`, outlineTag)
-      beforeSortData.push(outlineTag)
+      const innerTag = createTag(
+        "div",
+        ["class", "content_wrap m-0 p-0"],
+        false,
+        outlineTag
+      );
+      createTag(
+        "p",
+        ["class", "cauntry_count subregion_content m-0 p-0"],
+        `${val}カ国`,
+        innerTag
+      );
+      createTag(
+        "p",
+        ["class", "level subregion_content m-0 p-0"],
+        "",
+        innerTag
+      );
+      createTag(
+        "a",
+        [
+          ["class", "info subregion_content m-0 p-0"],
+          ["href", "#"],
+        ],
+        `${renameKey[i]}を調べる`,
+        outlineTag
+      );
+      beforeSortData.push(outlineTag);
     }
     i++;
   });
-  return beforeSortData.sort((a, b) => a.className.split(" ")[3] - b.className.split(" ")[3])
-}
-
+  return beforeSortData.sort(
+    (a, b) => a.className.split(" ")[3] - b.className.split(" ")[3]
+  );
+};
 
 const formatData = (data) => {
   let flagData = [];
@@ -504,11 +562,11 @@ const formatData = (data) => {
         name: d.name,
         flag: d.flag,
         latlng: [d.latlng[0], d.latlng[1]],
-        translations: d.translations
-      })
+        translations: d.translations,
+      });
     }
   });
-  return flagData
+  return flagData;
 };
 
 const setFlagDOM = (flagData) => {
@@ -519,8 +577,11 @@ const setFlagDOM = (flagData) => {
       "img",
       [
         ["src", flagData[i]._icon.currentSrc],
-        ["class", `flag_pic _ _ ${flagData[i]._latlng.lat}_${flagData[i]._latlng.lng}`],
-        ['name', flagData[i]._tooltip._content]
+        [
+          "class",
+          `flag_pic _ _ ${flagData[i]._latlng.lat}_${flagData[i]._latlng.lng}`,
+        ],
+        ["name", flagData[i]._tooltip._content],
       ],
       false,
       FLAG_WRAPPER
@@ -576,7 +637,7 @@ const getImgSrc = (answers) => {
       flagSrc: answers[0][2].getAttribute("src"),
     };
   }
-}
+};
 
 const changeBtn = (text) => {
   if (text === "もどる") {
