@@ -1,6 +1,45 @@
 'use strict'
 import {createTag} from '../index.js'
 
+const createCollectionView = (data) => {
+  const COLLECTION_WRAPPER = document.getElementById("collection");
+  (async () => {
+    const get = await COLLECTION_WRAPPER.getElementsByTagName("img");
+    const total = await COLLECTION_WRAPPER.children;
+    document.getElementById(
+      "getcount"
+    ).textContent = `${get.length}/${total.length}`;
+  })();
+  initElements(COLLECTION_WRAPPER);
+  for (let i = 0; i < data.length; i++) {
+    if (!data[i].translations.ja) continue;
+    const tag = createTag(
+      "span",
+      [
+        ["class", "result_flag mx-2"],
+        ["name", data[i].flag],
+      ],
+      data[i].translations.ja,
+      false
+    );
+
+    const src = localStorage.getItem(`${data[i].translations.ja} src`);
+    if (tag.getAttribute("name") === src) {
+      const parent = createImgTags(src, data, i);
+      COLLECTION_WRAPPER.appendChild(parent);
+    } else {
+      tag.style.backgroundColor = "gainsboro";
+      COLLECTION_WRAPPER.appendChild(tag);
+    }
+  }
+
+  const collectionRate = document.getElementById("collection_rate");
+  const flagImg = COLLECTION_WRAPPER.getElementsByClassName("pic");
+  const flagImgCount = flagImg.length;
+  const rate = ((flagImgCount / (data.length - 3)) * 100).toFixed(1);
+  collectionRate.textContent = rate + "%";
+};
+
 const createImgTags = (src, data, i) => {
   const parentTag = createTag(
     "div",
@@ -168,4 +207,6 @@ const createComparisonData = (data, i) => {
 };
 
 
-export {createImgTags}
+export {
+  createCollectionView
+}

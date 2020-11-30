@@ -43,10 +43,82 @@ const fetchWorld = (...args) => {
   }
 }
 
+const makeMarker = (lat_lng, name) => {
+  const Markers_shape = [];
+  const Markers_shape_pos = [];
+  const Markers_shape_nam = [];
+  Markers_shape_pos[0] = lat_lng;
+  Markers_shape_nam[0] = name;
+  Markers_shape[0] = L.marker([
+    Markers_shape_pos[0][0],
+    Markers_shape_pos[0][1],
+  ]);
+
+  Markers_shape[0]
+    .bindTooltip(Markers_shape_nam[0], {
+      permanent: true,
+      // offset: L.point(40, 0)
+    })
+    .openTooltip();
+  Markers_shape[0].bindPopup(Markers_shape_nam[0]).openPopup();
+  return Markers_shape[0];
+};
+
+const removeMarker = (markers) => {
+  markers.forEach((marker) => {
+    WORLDMAP.removeLayer(marker);
+  });
+};
+
+const makeCircle = (lat, lng) => {
+  if (referCircle) {
+    removeCircle(referCircle);
+  }
+  return L.circle([lat, lng], {
+    radius: 2000 * 1000,
+    color: "red",
+    fillColor: "pink",
+    fillOpacity: 0.5,
+  });
+};
+
+const removeCircle = (circle) => {
+  MINIMAP.removeLayer(circle);
+};
+
+const hiddenName = () => {
+  if (referMarkers.length === 0) return;
+
+  const cauntryNames = document.getElementsByClassName("leaflet-tooltip");
+  if (nameHidden) {
+    [...cauntryNames].forEach((name) => {
+      name.style.visibility = "visible";
+    });
+    [...popUpDom].forEach((dom) => {
+      dom.style.visibility = "hidden";
+    });
+    nameHidden = false;
+    return;
+  }
+
+  if (!nameHidden) {
+    [...cauntryNames].forEach((name) => {
+      name.style.visibility = "hidden";
+    });
+    [...popUpDom].forEach((dom) => {
+      dom.style.visibility = "visible";
+    });
+
+    nameHidden = true;
+    return;
+  }
+};
+
+
 //タイトルクリックで世界地図全体図にズームアウト
 document.getElementById('title').addEventListener("click", () => {
   WORLDMAP.setView(INITIAL_LATLNG, 2)
   MINIMAP.setView(INITIAL_LATLNG, 0)
 });
 
-export { WORLDMAP, MINIMAP, fetchWorld};
+export { WORLDMAP, MINIMAP, fetchWorld, makeMarker, makeCircle, hiddenName, removeMarker};

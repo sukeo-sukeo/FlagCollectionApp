@@ -1,17 +1,25 @@
 "use strict";
 
 import "./style.scss";
-import { WORLDMAP, MINIMAP, fetchWorld} from "./js/world.js";
+import {
+  WORLDMAP,
+  MINIMAP,
+  fetchWorld,
+  makeMarker,
+  makeCircle,
+  hiddenName,
+  removeMarker,
+} from "./js/world.js";
 import { createChart } from "./js/chart.js";
 import { dataManage, MARKER_URL, baseUrl, aboutMe } from "./js/data.js";
-import { createImgTags } from "./js/createCollectionDom.js";
+import { createCollectionView } from "./js/collection.js";
+import { createTag } from './js/function.js'
 
 const SELECT_BOX = document.getElementById("sub_region");
 const START_BTN = document.getElementById("start_btn");
 const SWITCH_BTN = document.getElementById("name_switch");
 const FLAG_WRAPPER = document.getElementById("cauntry_flag_wrapper");
 const RESULT_CLOSE_BTN = document.getElementById("result_close");
-const COLLECTION_WRAPPER = document.getElementById("collection");
 
 const collectionBtn = document.getElementById('collection_btn')
 const menuBtn = document.getElementById('menue_btn')
@@ -315,44 +323,6 @@ const clearView = () => {
   referMarkers.length = 0;
 };
 
-const createCollectionView = (data) => {
-  (async () => {
-    const get = await COLLECTION_WRAPPER.getElementsByTagName("img");
-    const total = await COLLECTION_WRAPPER.children;
-    document.getElementById(
-      "getcount"
-    ).textContent = `${get.length}/${total.length}`;
-  })();
-  initElements(COLLECTION_WRAPPER);
-  for (let i = 0; i < data.length; i++) {
-    if (!data[i].translations.ja) continue;
-    const tag = createTag(
-      "span",
-      [
-        ["class", "result_flag mx-2"],
-        ["name", data[i].flag],
-      ],
-      data[i].translations.ja,
-      false
-    );
-
-    const src = localStorage.getItem(`${data[i].translations.ja} src`);
-    if (tag.getAttribute("name") === src) {
-      const parent = createImgTags(src, data, i);
-      COLLECTION_WRAPPER.appendChild(parent);
-    } else {
-      tag.style.backgroundColor = "gainsboro";
-      COLLECTION_WRAPPER.appendChild(tag);
-    }
-  }
-
-  const collectionRate = document.getElementById("collection_rate");
-  const flagImg = COLLECTION_WRAPPER.getElementsByClassName("pic");
-  const flagImgCount = flagImg.length;
-  const rate = ((flagImgCount / (data.length - 3)) * 100).toFixed(1);
-  collectionRate.textContent = rate + "%";
-};
-
 const makeDict = (data) => {
   const dict = new Map();
   data.forEach((e) => {
@@ -538,106 +508,6 @@ const changeBtn = (text) => {
     START_BTN.classList.remove("btn-danger");
     START_BTN.classList.add("btn-info");
   }
-};
-
-const makeMarker = (lat_lng, name) => {
-  const Markers_shape = [];
-  const Markers_shape_pos = [];
-  const Markers_shape_nam = [];
-  Markers_shape_pos[0] = lat_lng;
-  Markers_shape_nam[0] = name;
-  Markers_shape[0] = L.marker([
-    Markers_shape_pos[0][0],
-    Markers_shape_pos[0][1],
-  ]);
-
-  Markers_shape[0]
-    .bindTooltip(Markers_shape_nam[0], {
-      permanent: true,
-      // offset: L.point(40, 0)
-    })
-    .openTooltip();
-  Markers_shape[0].bindPopup(Markers_shape_nam[0]).openPopup();
-  return Markers_shape[0];
-};
-
-const removeMarker = (markers) => {
-  markers.forEach((marker) => {
-    WORLDMAP.removeLayer(marker);
-  });
-};
-
-const makeCircle = (lat, lng) => {
-  if (referCircle) {
-    removeCircle(referCircle);
-  }
-  return L.circle([lat, lng], {
-    radius: 2000 * 1000,
-    color: "red",
-    fillColor: "pink",
-    fillOpacity: 0.5,
-  });
-};
-
-const removeCircle = (circle) => {
-  MINIMAP.removeLayer(circle);
-};
-
-const hiddenName = () => {
-  if (referMarkers.length === 0) return;
-
-  const cauntryNames = document.getElementsByClassName("leaflet-tooltip");
-  if (nameHidden) {
-    [...cauntryNames].forEach((name) => {
-      name.style.visibility = "visible";
-    });
-    [...popUpDom].forEach((dom) => {
-      dom.style.visibility = "hidden";
-    });
-    nameHidden = false;
-    return;
-  }
-
-  if (!nameHidden) {
-    [...cauntryNames].forEach((name) => {
-      name.style.visibility = "hidden";
-    });
-    [...popUpDom].forEach((dom) => {
-      dom.style.visibility = "visible";
-    });
-
-    nameHidden = true;
-    return;
-  }
-};
-
-//createTag('p', ['id', 'user_name' ], 'username: ', data_wrapper)
-//attrs, contentが不要の時はfalseを引数に入れる
-const createTag = (elementName, attrs, content, parentNode) => {
-  const el = document.createElement(elementName);
-
-  if (attrs !== false) {
-    if (typeof attrs !== "object") {
-      console.error(
-        '第２引数は配列、ペアでお願いします[attribute, attributeName]\n属性やテキストが必要ないときは"false"を入れてください'
-      );
-      return;
-    }
-
-    if (typeof attrs[0] === "object") {
-      attrs.forEach((attr) => {
-        el.setAttribute(attr[0], attr[1]);
-      });
-    } else {
-      el.setAttribute(attrs[0], attrs[1]);
-    }
-  }
-
-  if (content !== false) el.textContent = content;
-
-  if (parentNode) parentNode.appendChild(el);
-
-  return el;
 };
 
 window.onload = firstReading();
