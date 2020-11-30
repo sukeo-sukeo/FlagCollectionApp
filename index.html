@@ -14,17 +14,30 @@
 <body>
 
   <div id="main_wrapper" class="container-fluid p-0">
+    <!-- ヘッダー -->
     <nav id="header_wrapper" class="navbar navbar-expand-lg navbar-light py-0">
       <h1 id="title" class="mx-3">Hello World!</h1>
       <div id="sub_region"></div>
     </nav>
+
     <div id="game_wrapper">
+      <!-- ワールドマップ -->
       <div id="worldmap">
-        <button id="name_switch" class="badge badge-pill badge-dark border-0" style="font-size: 20px;">👀</button>
-        <button id="start_btn" class="btn btn-info">テストにチャレンジ</button>
-        <button id="menue_btn" class="btn p-0" data-toggle="modal" data-target="#status_modal">|||</button>
+        <div id="switch_wrap">
+          <div class="ml-5" style="display: flex; flex-direction: column;">
+            <button id="name_switch" class="badge badge-pill badge-light border-0 mb-1">👀</button>
+            <button id="type_switch" class="badge badge-pill badge-light border-0">🔃</button>
+          </div>
+          <p id="subregion_name" class="badge badge-dark"></p>
+          <div class="mr-3">
+            <button id="start_btn" class="btn btn-info">テストにチャレンジ</button>
+            <button id="menue_btn" class="btn p-0" data-toggle="modal" data-target="#status_modal">|||</button>
+          </div>
+        </div>
         <div id="cauntry_flag_wrapper"></div>
       </div>
+
+      <!-- ミニマップ -->
       <div id="minimap"></div>
     </div>
   </div> 

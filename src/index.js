@@ -1,7 +1,7 @@
 "use strict";
 
 import "./style.scss";
-import { WORLDMAP, MINIMAP, fetchWorld } from "./js/world.js";
+import { WORLDMAP, MINIMAP, fetchWorld} from "./js/world.js";
 import { createChart } from "./js/chart.js";
 
 const dataManage = {
@@ -92,8 +92,7 @@ menuBtn.addEventListener('click', () => createChart(dataManage))
 RESULT_CLOSE_BTN.addEventListener("click", () => {
   const result = document.getElementById("result");
   initElements(result);
-  // fetchData("all").then((data) => createCollectionView(data));
-  // createChart(dataManage);
+  createChart(dataManage);
 });
 
 SWITCH_BTN.addEventListener("click", () => hiddenName());
@@ -103,12 +102,11 @@ START_BTN.addEventListener("click", () => {
   if (isPlaying) {
     if (confirm("テストをあきらめて地域選択にもどりますか？")) {
       changeBtn("テストにチャレンジ");
+      document.getElementById("subregion_name").textContent = "";
       clearView();
       const val =
         parseInt(localStorage.getItem(`${subregionName} challengeCount`)) - 1;
       localStorage.setItem(`${subregionName} challengeCount`, val);
-      // //ここでストレージデータをつかう処理を走らせる
-      // createChart(dataManage);
       return;
     } else {
       return;
@@ -139,6 +137,7 @@ START_BTN.addEventListener("click", () => {
   changeBtn("もどる");
 
   const TARGET_DOMS = [...MARKERS_DOM, ...FLAGS_DOM];
+  console.log(TARGET_DOMS);
   playGame(TARGET_DOMS);
 });
 
@@ -158,6 +157,7 @@ SELECT_BOX.addEventListener("click", (event) => {
   initElements(FLAG_WRAPPER);
 
   subregionName = event.target.textContent;
+  document.getElementById('subregion_name').textContent = subregionName
   const target = event.target.id.replace(/_/g, " ");
   fetch(baseUrl + "subregion/" + target)
     .then((res) => res.json())
@@ -240,6 +240,8 @@ const playGame = (TERGET_DOMS) => {
 };
 
 const judge = (answers, TERGET_DOMS) => {
+  console.log(answers[0], answers[1]);
+  console.log(answers[0][1], answers[1][1]);
   if (answers[0][1] === answers[1][1]) {
     console.log("正解！");
     const markerDom = getImgSrc(answers).markerDom;
@@ -267,6 +269,7 @@ const judge = (answers, TERGET_DOMS) => {
 
 const gameClear = (data) => {
   isPlaying = false;
+  document.getElementById("subregion_name").textContent = ""
   changeBtn("テストにチャレンジ");
   if (!localStorage[`${subregionName} clearCount`]) {
     localStorage.setItem(`${subregionName} clearCount`, 1);

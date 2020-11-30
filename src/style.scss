@@ -44,22 +44,30 @@
         border: 5px solid seashell;
         box-shadow: 5px 5px 15px black;
         border-radius: 15px;
-        #name_switch {
+        #switch_wrap {
+          display: flex;
+          justify-content: space-between;
+          margin-top: 10px;
           position: relative;
           z-index: 1000;
-          left: 5%;
-          margin-top: 10px;
+        }
+        #name_switch {
+          font-size: 20px;
+        }
+        #subregion_name {
+          font-weight: lighter;
+          font-size: 24px;
+          height: 40px;
+          margin-top: 3px;
+          line-height: 30px;
+        }
+        #type_switch {
+          font-size: 20px;
         }
         #start_btn {
-          position: relative;
-          z-index: 1000;
-          left: 72%;
           width: 170px;
         }
         #menue_btn {
-          z-index: 1000;
-          position: relative;
-          left: 73%;
           font-size: 28px;
         }
       }
