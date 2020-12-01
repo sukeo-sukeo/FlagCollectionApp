@@ -52,7 +52,7 @@
           z-index: 1000;
         }
         #name_switch {
-          font-size: 20px;
+          font-size: 36px;
         }
         #subregion_name {
           font-weight: lighter;
@@ -62,13 +62,13 @@
           line-height: 30px;
         }
         #type_switch {
-          font-size: 20px;
+          font-size: 36px;
         }
         #start_btn {
           width: 170px;
         }
         #menue_btn {
-          font-size: 28px;
+          font-size: 36px;
         }
       }
     
@@ -132,7 +132,7 @@
     cursor: pointer;
     display: inline-block;
     width: 85px;
-    overflow: scroll;
+    // overflow: scroll;
     padding: 5px;
     font-size: 10px;
     text-align: center;

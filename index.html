@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" />
@@ -13,6 +14,7 @@
 </head>
 <body>
 
+  <!-- ヘッダー〜ワールドマップ-->
   <div id="main_wrapper" class="container-fluid p-0">
     <!-- ヘッダー -->
     <nav id="header_wrapper" class="navbar navbar-expand-lg navbar-light py-0">
@@ -20,18 +22,21 @@
       <div id="sub_region"></div>
     </nav>
 
+    <!-- マップ -->
     <div id="game_wrapper">
-      <!-- ワールドマップ -->
+      <!-- メインマップ -->
       <div id="worldmap">
         <div id="switch_wrap">
           <div class="ml-5" style="display: flex; flex-direction: column;">
-            <button id="name_switch" class="badge badge-pill badge-light border-0 mb-1">👀</button>
-            <button id="type_switch" class="badge badge-pill badge-light border-0">🔃</button>
+            <i id="name_switch" class="material-icons">remove_red_eye</i>
+            <i id="type_switch" class="material-icons">rotate_left</i>
           </div>
           <p id="subregion_name" class="badge badge-dark"></p>
           <div class="mr-3">
             <button id="start_btn" class="btn btn-info">テストにチャレンジ</button>
-            <button id="menue_btn" class="btn p-0" data-toggle="modal" data-target="#status_modal">|||</button>
+            <button id="menue_btn" class="btn p-0" data-toggle="modal" data-target="#status_modal">
+              <i class="material-icons">leaderboard</i>
+            </button>
           </div>
         </div>
         <div id="cauntry_flag_wrapper"></div>
@@ -78,8 +83,15 @@
             </h5>
           </div>
           <div>
-            <button id="aboutme_btn" class="btn p-0 mr-3">💡</button>
-            <button id="collection_btn" class="btn p-0" data-toggle="modal" data-target="#collection_modal">|||</button>
+            <button id="deletdata_btn" class="btn p-0 mr-3">
+              <i class="material-icons">delete</i>
+            </button>
+            <button id="aboutme_btn" class="btn p-0 mr-3">
+              <i class="material-icons">info</i>
+            </button>
+            <button id="collection_btn" class="btn p-0" data-toggle="modal" data-target="#collection_modal">
+              <i class="material-icons">grid_on</i>
+            </button>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>

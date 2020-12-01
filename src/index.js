@@ -1,18 +1,9 @@
 "use strict";
 
 import "./style.scss";
-import {
-  WORLDMAP,
-  MINIMAP,
-  fetchWorld,
-  makeMarker,
-  makeCircle,
-  hiddenName,
-  removeMarker,
-} from "./js/world.js";
+import { WORLDMAP, MINIMAP, fetchWorld } from "./js/world.js";
 import { createChart } from "./js/chart.js";
-import { dataManage, MARKER_URL, baseUrl, aboutMe } from "./js/data.js";
-import { createCollectionView } from "./js/collection.js";
+import { dataManage, MARKER_URL, baseUrl, aboutMe, deleteStore } from "./js/data.js";
 import { createTag } from './js/function.js'
 
 const SELECT_BOX = document.getElementById("sub_region");
@@ -21,6 +12,7 @@ const SWITCH_BTN = document.getElementById("name_switch");
 const FLAG_WRAPPER = document.getElementById("cauntry_flag_wrapper");
 const RESULT_CLOSE_BTN = document.getElementById("result_close");
 
+const deleteBtn = document.getElementById("deletdata_btn");
 const collectionBtn = document.getElementById('collection_btn')
 const menuBtn = document.getElementById('menue_btn')
 const aboumeBtn = document.getElementById('aboutme_btn')
@@ -50,8 +42,6 @@ const firstReading = () => {
   fetchWorld().addTo(WORLDMAP);
   fetchWorld().addTo(MINIMAP);
   fetchData("all").then((data) => {
-    console.log(data);
-    // localStorage.clear();
     
     const headerDict = makeDict(data);
     const headerDOMs = createSubregionTags(headerDict);
@@ -66,6 +56,11 @@ const firstReading = () => {
     setTimeout(() => localStorage.setItem("isStarted", "true"), 2000);
   })
 };
+
+deleteBtn.addEventListener('click', () => {
+  deleteStore()
+  createChart(dataManage)
+})
 
 aboumeBtn.addEventListener('click', () => aboutMe())
 
@@ -83,7 +78,6 @@ RESULT_CLOSE_BTN.addEventListener("click", () => {
 SWITCH_BTN.addEventListener("click", () => hiddenName());
 
 START_BTN.addEventListener("click", () => {
-  // correctCount = 10;
   if (isPlaying) {
     if (confirm("テストをあきらめて地域選択にもどりますか？")) {
       changeBtn("テストにチャレンジ");
@@ -119,10 +113,11 @@ START_BTN.addEventListener("click", () => {
     d.style.width = "30px";
     d.style.height = "30px";
   });
+
+  menuBtn.style.visibility = 'hidden'
   changeBtn("もどる");
 
   const TARGET_DOMS = [...MARKERS_DOM, ...FLAGS_DOM];
-  console.log(TARGET_DOMS);
   playGame(TARGET_DOMS);
 });
 
@@ -225,10 +220,8 @@ const playGame = (TERGET_DOMS) => {
 };
 
 const judge = (answers, TERGET_DOMS) => {
-  console.log(answers[0], answers[1]);
   console.log(answers[0][1], answers[1][1]);
   if (answers[0][1] === answers[1][1]) {
-    console.log("正解！");
     const markerDom = getImgSrc(answers).markerDom;
     const flagSrc = getImgSrc(answers).flagSrc;
     const flagDom = getImgSrc(answers).flagDom;
@@ -241,12 +234,11 @@ const judge = (answers, TERGET_DOMS) => {
       markerDom.style.height = "30px";
     }, 1000);
     correctCount++;
-    console.log(correctCount);
+    console.log('correct!', correctCount);
   } else {
-    console.log("間違い");
     setTimeout(() => changeClass(/*del =*/ "clicked", /*add =*/ false), 1000);
     mistakeCount++;
-    console.log(mistakeCount);
+    console.log('miss!', mistakeCount);
   }
   answers.length = 0;
   playGame(TERGET_DOMS);
@@ -267,34 +259,31 @@ const gameClear = (data) => {
   const getFlagImgs = data.filter(
     (d) => d.className.split(" ")[0] === "flag_pic"
   );
-  console.log(getFlagImgs[0].getAttribute("name"));
   const src = getFlagImgs.map((img) => img.getAttribute("src"));
   const name = getFlagImgs.map((img) => img.getAttribute("name"));
-  console.log(src, name);
 
   const msg = document.getElementById("clearMsg");
   $("#result_modal").modal();
-  console.log(mistakeCount);
   if (!mistakeCount) {
     result_getFlag(src, name, src.length);
-    msg.textContent = "Get all flags!";
+    msg.textContent = "Get all flags!　すべての国旗をゲット！";
     clearView();
     return;
   }
   if (mistakeCount <= 5) {
     result_getFlag(src, name, 5);
-    msg.textContent = "Get two flags!";
+    msg.textContent = "Get two flags! ２枚の国旗をゲット！";
     clearView();
     return;
   }
   if (mistakeCount <= 3) {
     result_getFlag(src, name, 3);
-    msg.textContent = "Get three flags!";
+    msg.textContent = "Get three flags! ３枚の国旗をゲット！";
     clearView();
     return;
   }
   result_getFlag(src, name, 1);
-  msg.textContent = "Get one flags!";
+  msg.textContent = "Get one flags! １枚の国旗をゲット！";
   clearView();
 };
 
@@ -319,6 +308,7 @@ const clearView = () => {
   isPlaying = false;
   correctCount = 0;
   mistakeCount = 0;
+  menuBtn.style.visibility = "visible";
   initElements(FLAG_WRAPPER);
   referMarkers.length = 0;
 };
@@ -335,6 +325,283 @@ const makeDict = (data) => {
   });
   return dict;
 };
+
+const makeMarker = (lat_lng, name) => {
+  const Markers_shape = [];
+  const Markers_shape_pos = [];
+  const Markers_shape_nam = [];
+  Markers_shape_pos[0] = lat_lng;
+  Markers_shape_nam[0] = name;
+  Markers_shape[0] = L.marker([
+    Markers_shape_pos[0][0],
+    Markers_shape_pos[0][1],
+  ]);
+
+  Markers_shape[0]
+    .bindTooltip(Markers_shape_nam[0], {
+      permanent: true,
+      // offset: L.point(40, 0)
+    })
+    .openTooltip();
+  Markers_shape[0].bindPopup(Markers_shape_nam[0]).openPopup();
+  return Markers_shape[0];
+};
+
+const removeMarker = (markers) => {
+  markers.forEach((marker) => {
+    WORLDMAP.removeLayer(marker);
+  });
+};
+
+const makeCircle = (lat, lng) => {
+  if (referCircle) {
+    removeCircle(referCircle);
+  }
+  return L.circle([lat, lng], {
+    radius: 2000 * 1000,
+    color: "red",
+    fillColor: "pink",
+    fillOpacity: 0.5,
+  });
+};
+
+const removeCircle = (circle) => {
+  MINIMAP.removeLayer(circle);
+};
+
+const hiddenName = () => {
+  if (referMarkers.length === 0) return;
+
+  const cauntryNames = document.getElementsByClassName("leaflet-tooltip");
+  if (nameHidden) {
+    [...cauntryNames].forEach((name) => {
+      name.style.visibility = "visible";
+    });
+    [...popUpDom].forEach((dom) => {
+      dom.style.visibility = "hidden";
+    });
+    nameHidden = false;
+    return;
+  }
+
+  if (!nameHidden) {
+    [...cauntryNames].forEach((name) => {
+      name.style.visibility = "hidden";
+    });
+    [...popUpDom].forEach((dom) => {
+      dom.style.visibility = "visible";
+    });
+
+    nameHidden = true;
+    return;
+  }
+};
+
+const createCollectionView = (data) => {
+  const COLLECTION_WRAPPER = document.getElementById("collection");
+  (async () => {
+    const get = await COLLECTION_WRAPPER.getElementsByTagName("img");
+    const total = await COLLECTION_WRAPPER.children;
+    document.getElementById(
+      "getcount"
+    ).textContent = `${get.length}/${total.length}`;
+  })();
+  initElements(COLLECTION_WRAPPER);
+  for (let i = 0; i < data.length; i++) {
+    if (!data[i].translations.ja) continue;
+    const tag = createTag(
+      "span",
+      [
+        ["class", "result_flag mx-2"],
+        ["name", data[i].flag],
+      ],
+      data[i].translations.ja,
+      false
+    );
+
+    const src = localStorage.getItem(`${data[i].translations.ja} src`);
+    if (tag.getAttribute("name") === src) {
+      const parent = createImgTags(src, data, i);
+      COLLECTION_WRAPPER.appendChild(parent);
+    } else {
+      tag.style.backgroundColor = "gainsboro";
+      COLLECTION_WRAPPER.appendChild(tag);
+    }
+  }
+
+  const collectionRate = document.getElementById("collection_rate");
+  const flagImg = COLLECTION_WRAPPER.getElementsByClassName("pic");
+  const flagImgCount = flagImg.length;
+  const rate = ((flagImgCount / (data.length - 3)) * 100).toFixed(1);
+  collectionRate.textContent = rate + "%";
+};
+
+const createImgTags = (src, data, i) => {
+  const parentTag = createTag(
+    "div",
+    [
+      ["class", "dropdown"],
+      ["style", "display: inline-block; left: 1%;"],
+    ],
+    false,
+    false
+  );
+  createTag(
+    "img",
+    [
+      ["src", src],
+      ["class", "result_flag pic dropdown-toggle"],
+      ["name", data[i].name],
+      ["id", "collection_flag_toggle"],
+      ["data-toggle", "dropdown"],
+      ["aria-haspopup", "true"],
+      ["aria-expanded", "false"],
+    ],
+    false,
+    parentTag
+  );
+
+  const childTag = createTag(
+    "ul",
+    [
+      ["class", "dropdown-menu bg-transparent"],
+      ["style", "width: 250px; border: none;"],
+      ["aria-labelledby", "collection_flag_toggle"],
+    ],
+    false,
+    parentTag
+  );
+
+  const dataObj = createComparisonData(data, i);
+
+  createTag(
+    "li",
+    ["class", "list-group-item p-2 bg-dark text-white"],
+    "国名: " + dataObj.name,
+    childTag
+  );
+  createTag(
+    "li",
+    ["class", "list-group-item p-2 bg-dark text-white"],
+    "首都: " + dataObj.capital,
+    childTag
+  );
+  createTag(
+    "li",
+    ["class", "list-group-item p-2 bg-dark text-white"],
+    "人口: " + dataObj.papulation + "人",
+    childTag
+  );
+  createTag(
+    "li",
+    ["class", "list-group-item p-2 bg-dark text-white"],
+    "広さ: " + dataObj.area + "㎢",
+    childTag
+  );
+  createTag(
+    "li",
+    ["class", "list-group-item p-2 bg-dark text-white"],
+    "地域: " + dataObj.subregion,
+    childTag
+  );
+  createTag(
+    "li",
+    [
+      ["class", "list-group-item p-1 bg-light border-bottom-0"],
+      ["style", "font-size: 12px;"],
+    ],
+    `日本の${dataObj.popldiff}倍の人口`,
+    childTag
+  );
+  createTag(
+    "li",
+    [
+      ["class", "list-group-item p-1 bg-light border-bottom-0 border-top-0"],
+      ["style", "font-size: 12px;"],
+    ],
+    `日本の${dataObj.areadiff}倍の広さ`,
+    childTag
+  );
+  createTag(
+    "li",
+    [
+      ["class", "list-group-item p-1 bg-light  border-bottom-0 border-top-0"],
+      ["style", "font-size: 12px;"],
+      ["name", dataObj.code],
+    ],
+    `日本と約${dataObj.jisa}時間違います`,
+    childTag
+  );
+  createTag(
+    "li",
+    [
+      ["class", "list-group-item p-1 bg-light border-bottom-0 border-top-0"],
+      ["style", "font-size: 12px;"],
+    ],
+    `この国は今${dataObj.time.M}月${dataObj.time.D}日(${dataObj.time.W})${dataObj.time.H}時${dataObj.time.Mi}分です`,
+    childTag
+  );
+  createTag(
+    "li",
+    [
+      [
+        "class",
+        "bigflag_btn list-group-item p-2 bg-info text-white  border-top-0",
+      ],
+      ["style", "font-size: 12px;"],
+      ["name", data[i].name],
+    ],
+    "国旗を見る",
+    childTag
+  );
+
+  const bigflags = document.getElementsByClassName("bigflag_btn");
+  const bigflag = document.getElementById("bigflagimg");
+  const flagname = document.getElementById("flagname");
+  [...bigflags].forEach((flag) => {
+    flag.onclick = (e) => {
+      const cauntryName = e.target.getAttribute("name");
+      fetchData("name/" + cauntryName).then((data) => {
+        flagname.textContent = data[0].translations.ja;
+        bigflag.setAttribute("src", data[0].flag);
+        $("#bigflag_modal").modal();
+      });
+    };
+  });
+  return parentTag;
+};
+
+const createComparisonData = (data, i) => {
+  const jaArea = 377930;
+  const jaPopl = 126960000;
+  const today = new Date();
+  const japanTime = today.getTime() - 9 * (60 * 60 * 1000);
+  const jisa = parseInt(data[i].timezones[0].split(":")[0].slice(4, 6));
+  const code = data[i].timezones[0].split(":")[0][3];
+  const worldTime = new Date(
+    Number(japanTime) + Number(code + jisa * 60 * 60 * 1000)
+  );
+  const weekStr = ["日", "月", "火", "水", "木", "金", "土"];
+  return {
+    name: data[i].translations.ja,
+    capital: data[i].capital,
+    papulation: Number(data[i].population).toLocaleString(),
+    area: Number(data[i].area).toLocaleString(),
+    subregion: data[i].subregion,
+    areadiff: (data[i].area / jaArea).toFixed(2),
+    popldiff: (data[i].population / jaPopl).toFixed(2),
+    time: {
+      M: worldTime.getMonth() + 1,
+      D: worldTime.getDate(),
+      W: weekStr[worldTime.getDay()],
+      H: worldTime.getHours(),
+      Mi: worldTime.getMinutes(),
+    },
+    jisa: 9 - Number(code + jisa),
+    code: code,
+  };
+};
+
 
 const createSubregionTags = (dict) => {
   let i = 0;
@@ -429,7 +696,6 @@ const formatData = (data) => {
 };
 
 const setFlagDOM = (flagData) => {
-  console.log(flagData[0]);
   for (let i = 0; i < level; i++) {
     if (i >= flagData.length) return;
     createTag(
@@ -452,6 +718,7 @@ const shuffle = ([...arr]) => {
   let m = arr.length;
   while (m) {
     const i = Math.floor(Math.random() * m--);
+    //これ↓がないとpromise errorとなる
     console.log(i);
     [arr[m], arr[i]] = [arr[i], arr[m]];
   }

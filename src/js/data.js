@@ -34,8 +34,19 @@ export const baseUrl = "https://restcountries.eu/rest/v2/";
 export const aboutMe = () => {
   alert(
     `ようこそ!
-        テストにチャレンジして世界の国旗を集めようよう！
-        テストをクリアすると国旗がもらえるぞ！
-        少ない間違いでテストをクリアするとほどたくさん国旗がもらえるぞ！`
+     テストにチャレンジして世界の国旗を集めよう！
+     ランダムに１０カ国の国旗が出題されるぞ！
+     テストをクリアすると国旗がもらえるぞ！
+     少ない間違いでテストをクリアするとほどたくさん国旗がもらえるぞ！
+     コンプリート目指して頑張ろう！
+     `
   );
 };
+
+export const deleteStore = () => {
+  if (confirm('チャレンジ回数とクリア回数をリセットしますか？')) {
+    if (confirm('コレクションデータも削除されますがよろしいですか？')) {
+      localStorage.clear();
+    } else return
+  } else return
+}
