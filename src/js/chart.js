@@ -1,6 +1,6 @@
-const ctx = document.getElementById("myChart").getContext("2d");
 
 const createChart = (key) => {
+  const ctx = document.getElementById("myChart").getContext("2d");
   const sortData = Object.keys(key).sort((a, b) => key[a].postion - key[b].postion)
   const labels = sortData.filter(d => d.length !== 0)
   const challengeCount = labels.map(label => localStorage.getItem(`${label} challengeCount`))
@@ -62,6 +62,7 @@ const createChart = (key) => {
       }
     },
   });
+
 };
 
 export { createChart }

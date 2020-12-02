@@ -274,25 +274,28 @@ const gameClear = (data) => {
   $("#result_modal").modal();
   if (!mistakeCount) {
     result_getFlag(src, name, src.length);
-    msg.textContent = "Get all flags!　すべての国旗をゲット！";
+    msg.textContent = "Get all flags!　すべての国旗をゲット！\nすごい！パーフェクト！";
     clearView();
     return;
   }
-  if (mistakeCount <= 5) {
-    result_getFlag(src, name, 5);
-    msg.textContent = "Get two flags! ２枚の国旗をゲット！";
+  if (mistakeCount >= 5) {
+    result_getFlag(src, name, 1);
+    msg.textContent = `Get one flags! １枚の国旗をゲット！\n${mistakeCount}回まちがえたよ！`;
+    clearView();
+    return
+  }
+  if (mistakeCount === 4) {
+    result_getFlag(src, name, 2);
+    msg.textContent = `Get two flags! ２枚の国旗をゲット！\n${mistakeCount}回まちがえたよ！`;
     clearView();
     return;
   }
   if (mistakeCount <= 3) {
     result_getFlag(src, name, 3);
-    msg.textContent = "Get three flags! ３枚の国旗をゲット！";
+    msg.textContent = `Get three flags! ３枚の国旗をゲット！\n${mistakeCount}回まちがえたよ！`;
     clearView();
     return;
   }
-  result_getFlag(src, name, 1);
-  msg.textContent = "Get one flags! １枚の国旗をゲット！";
-  clearView();
 };
 
 const result_getFlag = (src, name, leng) => {
