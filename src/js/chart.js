@@ -28,6 +28,7 @@ const createChart = (key) => {
   chaCnt.textContent = totalChallengeCnt
   clearCnt.textContent = totalClearCnt
 
+
   return new Chart(ctx, {
     // The type of chart we want to create
     type: "bar",

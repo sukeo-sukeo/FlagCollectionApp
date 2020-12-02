@@ -33,6 +33,7 @@ let mistakeCount = null;
 let referMarkers = [];
 let referCircle;
 let subregionName;
+let chartFlag;
 
 let isPlaying = false;
 let nameHidden = false;
@@ -43,7 +44,6 @@ const firstReading = () => {
   fetchWorld().addTo(WORLDMAP);
   fetchWorld().addTo(MINIMAP);
   fetchData("all").then((data) => {
-    
     const headerDict = makeDict(data);
     const headerDOMs = createSubregionTags(headerDict);
     headerDOMs.forEach((dom) => {
@@ -67,7 +67,14 @@ aboumeBtn.addEventListener('click', () => aboutMe())
 
 collectionBtn.addEventListener('click', () => fetchData("all").then((data) => createCollectionView(data)))
 
-menuBtn.addEventListener('click', () => createChart(dataManage))
+menuBtn.addEventListener('click', () => {
+  if (chartFlag) {
+    console.log('destroy');
+    createChart(dataManage).destroy()
+  }
+  createChart(dataManage)
+  chartFlag = true
+})
 
 
 RESULT_CLOSE_BTN.addEventListener("click", () => {
