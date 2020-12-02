@@ -5,6 +5,7 @@ import { WORLDMAP, MINIMAP, fetchWorld } from "./js/world.js";
 import { createChart } from "./js/chart.js";
 import { dataManage, MARKER_URL, baseUrl, aboutMe, deleteStore } from "./js/data.js";
 import { createTag } from './js/function.js'
+import { BATU, MARU } from "./js/marubatu";
 
 const SELECT_BOX = document.getElementById("sub_region");
 const START_BTN = document.getElementById("start_btn");
@@ -201,6 +202,7 @@ const playGame = (TERGET_DOMS) => {
     target_dom.onclick = (e) => {
       const ansContainer = e.target.className.split(" ")[0];
       const ansLatLng = e.target.className.split(" ")[3];
+      console.log('205', ansContainer, ansLatLng);
       if (
         // １枚めと同じcontainerは選択できない
         (answers.length === 1 && answers[0][0] === ansContainer) ||
@@ -220,11 +222,14 @@ const playGame = (TERGET_DOMS) => {
 };
 
 const judge = (answers, TERGET_DOMS) => {
-  console.log(answers[0][1], answers[1][1]);
+  console.log('225', answers[0]);
+  console.log('226', answers[1]);
+  console.log('227', answers[0][1], answers[1][1]);
   if (answers[0][1] === answers[1][1]) {
     const markerDom = getImgSrc(answers).markerDom;
     const flagSrc = getImgSrc(answers).flagSrc;
     const flagDom = getImgSrc(answers).flagDom;
+    MARU(true);
     setTimeout(() => {
       changeClass(/*del =*/ "clicked", /*add =*/ false);
       flagDom.classList.add("corrected");
@@ -232,11 +237,16 @@ const judge = (answers, TERGET_DOMS) => {
       markerDom.setAttribute("src", flagSrc);
       markerDom.style.width = "40px";
       markerDom.style.height = "30px";
+      MARU(false)
     }, 1000);
     correctCount++;
     console.log('correct!', correctCount);
   } else {
-    setTimeout(() => changeClass(/*del =*/ "clicked", /*add =*/ false), 1000);
+    BATU(true);
+    setTimeout(() => {
+      changeClass(/*del =*/ "clicked", /*add =*/ false)
+      BATU(false);
+    }, 1000);
     mistakeCount++;
     console.log('miss!', mistakeCount);
   }
@@ -704,7 +714,7 @@ const setFlagDOM = (flagData) => {
         ["src", flagData[i]._icon.currentSrc],
         [
           "class",
-          `flag_pic _ _ ${flagData[i]._latlng.lat}_${flagData[i]._latlng.lng}`,
+          `flag_pic _ __ ${flagData[i]._latlng.lat}_${flagData[i]._latlng.lng}`,
         ],
         ["name", flagData[i]._tooltip._content],
       ],
@@ -741,6 +751,7 @@ const initElements = (...args) => {
 
 const changeClass = (delClassName, addClassName) => {
   const elements = document.querySelectorAll(`.${delClassName}`);
+  console.log(elements);
   elements.forEach((element) => element.classList.remove(delClassName));
   if (addClassName) {
     elements.forEach((element) => element.classList.add(addClassName));
