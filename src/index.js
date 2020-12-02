@@ -33,7 +33,6 @@ let mistakeCount = null;
 let referMarkers = [];
 let referCircle;
 let subregionName;
-let chartFlag;
 
 let isPlaying = false;
 let nameHidden = false;
@@ -49,6 +48,7 @@ const firstReading = () => {
     headerDOMs.forEach((dom) => {
       SELECT_BOX.appendChild(dom);
     });
+    createChart(dataManage);
     [...popUpDom].forEach((dom) => {
       dom.style.visibility = "hidden";
     });
@@ -68,12 +68,8 @@ aboumeBtn.addEventListener('click', () => aboutMe())
 collectionBtn.addEventListener('click', () => fetchData("all").then((data) => createCollectionView(data)))
 
 menuBtn.addEventListener('click', () => {
-  if (chartFlag) {
-    console.log('destroy');
-    createChart(dataManage).destroy()
-  }
+  document.getElementById('myChart').remove()
   createChart(dataManage)
-  chartFlag = true
 })
 
 
