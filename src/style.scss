@@ -133,10 +133,11 @@
     cursor: pointer;
     display: inline-block;
     width: 85px;
-    overflow: hidden;
+    // overflow: hidden;
     padding: 5px;
     font-size: 10px;
     text-align: center;
+    vertical-align: middle;
   }
 
   .pic {
