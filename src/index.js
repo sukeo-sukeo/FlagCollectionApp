@@ -83,10 +83,8 @@ START_BTN.addEventListener("click", () => {
     if (confirm("テストをあきらめて地域選択にもどりますか？")) {
       changeBtn("テストにチャレンジ");
       document.getElementById("subregion_name").textContent = "";
+      createChart(dataManage)
       clearView();
-      const val =
-        parseInt(localStorage.getItem(`${subregionName} challengeCount`)) - 1;
-      localStorage.setItem(`${subregionName} challengeCount`, val);
       return;
     } else {
       return;
@@ -116,7 +114,7 @@ START_BTN.addEventListener("click", () => {
   });
 
   menuBtn.style.visibility = 'hidden'
-  changeBtn("もどる");
+  changeBtn("あきらめる");
 
   const TARGET_DOMS = [...MARKERS_DOM, ...FLAGS_DOM];
   playGame(TARGET_DOMS);
@@ -777,7 +775,7 @@ const getImgSrc = (answers) => {
 };
 
 const changeBtn = (text) => {
-  if (text === "もどる") {
+  if (text === "あきらめる") {
     START_BTN.textContent = text;
     START_BTN.classList.remove("btn-info");
     START_BTN.classList.add("btn-danger");
