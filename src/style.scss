@@ -145,11 +145,14 @@
   }
 
   .modal-content {
-    width: 85vw;
-    left: -35%;
+    width: 90vw;
+    left: -41%;
     @media screen and (max-width: 500px) {
-      left: 6%;
+      left: 4%;
     }
+    // @media screen and (max-width: 800px) {
+    //   left: -17%;
+    // }
   }
 
   
