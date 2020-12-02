@@ -145,14 +145,17 @@
   }
 
   .modal-content {
+    //PC・タブレット横
     width: 90vw;
     left: -41%;
+    //タブレット縦・スマホ横
+    @media screen and (max-width: 800px) {
+      left: -20%;
+    }
+    //スマホ縦
     @media screen and (max-width: 500px) {
       left: 4%;
     }
-    // @media screen and (max-width: 800px) {
-    //   left: -17%;
-    // }
   }
 
   
