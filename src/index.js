@@ -48,7 +48,7 @@ const firstReading = () => {
     headerDOMs.forEach((dom) => {
       SELECT_BOX.appendChild(dom);
     });
-    createChart(dataManage);
+    createChart(dataManage, 'nonDestroy');
     [...popUpDom].forEach((dom) => {
       dom.style.visibility = "hidden";
     });
@@ -67,10 +67,7 @@ aboumeBtn.addEventListener('click', () => aboutMe())
 
 collectionBtn.addEventListener('click', () => fetchData("all").then((data) => createCollectionView(data)))
 
-menuBtn.addEventListener('click', () => {
-  document.getElementById('myChart').remove()
-  createChart(dataManage)
-})
+menuBtn.addEventListener('click', () => createChart(dataManage))
 
 
 RESULT_CLOSE_BTN.addEventListener("click", () => {
@@ -520,19 +517,13 @@ const createImgTags = (src, data, i) => {
   );
   createTag(
     "li",
-    [
-      ["class", "list-group-item p-1 bg-light border-bottom-0"],
-      ["style", "font-size: 12px;"],
-    ],
+    ["class", "list-group-item p-1 bg-light border-bottom-0"],
     `日本の${dataObj.popldiff}倍の人口`,
     childTag
   );
   createTag(
     "li",
-    [
-      ["class", "list-group-item p-1 bg-light border-bottom-0 border-top-0"],
-      ["style", "font-size: 12px;"],
-    ],
+    ["class", "list-group-item p-1 bg-light border-bottom-0 border-top-0"],
     `日本の${dataObj.areadiff}倍の広さ`,
     childTag
   );
@@ -540,7 +531,6 @@ const createImgTags = (src, data, i) => {
     "li",
     [
       ["class", "list-group-item p-1 bg-light  border-bottom-0 border-top-0"],
-      ["style", "font-size: 12px;"],
       ["name", dataObj.code],
     ],
     `日本と約${dataObj.jisa}時間違います`,
@@ -562,7 +552,7 @@ const createImgTags = (src, data, i) => {
         "class",
         "bigflag_btn list-group-item p-2 bg-info text-white  border-top-0",
       ],
-      ["style", "font-size: 12px;"],
+      ["style", 'cursor: pointer;'],
       ["name", data[i].name],
     ],
     "国旗を見る",

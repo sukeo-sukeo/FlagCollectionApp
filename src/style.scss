@@ -120,6 +120,9 @@
     .dropdown-menu {
       background-size: contain;
     }
+    .dropdown {
+      vertical-align: middle;
+    }
   }
   
   .modal {
@@ -133,16 +136,20 @@
     cursor: pointer;
     display: inline-block;
     width: 85px;
-    // overflow: hidden;
     padding: 5px;
     font-size: 10px;
     text-align: center;
     vertical-align: middle;
+    overflow: hidden;
   }
 
   .pic {
     padding: 0;
     vertical-align: baseline;
+  }
+
+  .modal-body {
+    margin: 0 auto;
   }
 
   .modal-content {
@@ -152,6 +159,12 @@
     //タブレット縦・スマホ横
     @media screen and (max-width: 800px) {
       left: -20%;
+    }
+    @media screen and (max-width: 700px) {
+      left: -10%;
+    }
+    @media screen and (max-width: 600px) {
+      left: 0%;
     }
     //スマホ縦
     @media screen and (max-width: 500px) {

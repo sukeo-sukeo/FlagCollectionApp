@@ -1,6 +1,7 @@
 import { createTag } from "./function";
 
-const createChart = (key) => {
+const createChart = (key, destroy) => {
+  if (!destroy) document.getElementById("myChart").remove();
   const canvas = createTag('canvas', ['id', 'myChart'], false, document.getElementById('status_chart'))
   const ctx = canvas.getContext("2d");
   const sortData = Object.keys(key).sort((a, b) => key[a].postion - key[b].postion)
