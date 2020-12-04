@@ -1,9 +1,19 @@
 import { createTag } from "./function";
 
 const createChart = (key, destroy) => {
-  if (!destroy) document.getElementById("myChart").remove();
+  if (!destroy) {
+    console.log('destroy');
+    const chart = document.getElementById('status_chart')
+    while (chart.firstChild) {
+      chart.removeChild(chart.firstChild);
+    }
+  }
+
   const canvas = createTag('canvas', ['id', 'myChart'], false, document.getElementById('status_chart'))
+
+  // const canvas = document.getElementById('canvas')
   const ctx = canvas.getContext("2d");
+  
   const sortData = Object.keys(key).sort((a, b) => key[a].postion - key[b].postion)
   const labels = sortData.filter(d => d.length !== 0)
   const challengeCount = labels.map(label => localStorage.getItem(`${label} challengeCount`))
@@ -30,8 +40,7 @@ const createChart = (key, destroy) => {
 
   chaCnt.textContent = totalChallengeCnt
   clearCnt.textContent = totalClearCnt
-
-
+ 
   return new Chart(ctx, {
     // The type of chart we want to create
     type: "bar",
